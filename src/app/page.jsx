@@ -50,7 +50,7 @@ export default function Login() {
               src={logo}
               alt="logo"
             />
-            <h1 className="ml-3 text-xl text-black font-bold">Mood</h1>
+            <h1 className="ml-3 text-xl text-black font-semibold">Mood</h1>
           </div>
         </div>
         <div className="flex-grow flex items-center justify-center bg-gradient-to-r from-yellow-400 via-red-500 to-purple-600">
