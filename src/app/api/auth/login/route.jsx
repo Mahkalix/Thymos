@@ -1,12 +1,12 @@
 // app/api/login/route.js
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   const { email, password } = await req.json();
 
   try {
-    // Find the user by email
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -20,7 +20,6 @@ export async function POST(req) {
       );
     }
 
-    // Compare the provided password with the stored hash
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -32,10 +31,20 @@ export async function POST(req) {
       );
     }
 
-    // Authentication successful
-    return new Response(JSON.stringify({ message: "Connexion réussie !" }), {
-      status: 200,
+    //stocke user.id dans cookies
+
+    const res = NextResponse.json({ message: "Connexion réussie !" });
+    const userId = user.id;
+    console.log("User ID from database:", userId);
+
+    res.cookies.set("id", userId, {
+      httpOnly: true, // Empêche l'accès via JavaScript
+      secure: process.env.NODE_ENV === "production", // Utiliser des cookies sécurisés en production
+      sameSite: "strict", // Prévenir les attaques CSRF
+      maxAge: 60 * 60 * 24, // Le cookie expire dans 1 jour
     });
+
+    return res;
   } catch (error) {
     console.error(error);
     return new Response(

@@ -60,7 +60,7 @@ export default function Login() {
               htmlFor="password"
               className="block mb-2 text-sm font-medium text-gray-700"
             >
-              Mot de passe
+              Password
             </label>
             <input
               type="password"
@@ -75,14 +75,14 @@ export default function Login() {
             type="submit"
             className="w-full px-4 py-2 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none"
           >
-            Se connecter
+            Log in
           </button>
         </form>
         <button
           onClick={handleRegister}
           className="w-full px-4 py-2 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none"
         >
-          S&apos;inscrire
+          Register
         </button>
       </div>
     </div>

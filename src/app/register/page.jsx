@@ -23,7 +23,7 @@ export default function Register() {
 
     if (res.ok) {
       alert("Inscription réussie !");
-      router.push("/dashboard");
+      router.push("/");
     } else {
       setError(
         data.message || "Erreur lors de l'inscription. Veuillez réessayer."
