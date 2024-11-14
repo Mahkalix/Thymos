@@ -1,0 +1,13 @@
+{
+    "build": {
+      "env": {
+        "PNPM_VERSION": "9.12.1"
+      },
+      "command": "pnpm install && pnpm build"
+    },
+    "env": {
+      "NODE_ENV": "production",
+      "NEXTAUTH_URL": "https://ton-app.vercel.app"
+    }
+  }
+  
