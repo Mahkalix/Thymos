@@ -16,12 +16,46 @@ export async function GET(req) {
     );
   }
 
-  try {
-    // Appel à Spotify pour récupérer des playlists
-    const playlistsData = await getSpotifyData("browse/featured-playlists"); // Endpoint Spotify, tu peux ajuster selon l'humeur
-    const playlists = playlistsData.playlists.items;
+  // Liste des humeurs disponibles
+  const availableMoods = ["Happy", "Sad", "Excited", "Calm", "Anxious"];
 
-    // Tu peux ajouter une logique pour filtrer les playlists selon l'humeur ici si nécessaire
+  // Vérifier si l'humeur est valide
+  if (!availableMoods.includes(mood)) {
+    return new Response(JSON.stringify({ error: "Humeur non valide" }), {
+      status: 400,
+    });
+  }
+
+  // Map des moods aux genres ou ambiances Spotify
+  let query = "";
+  switch (mood) {
+    case "Happy":
+      query = "happy";
+      break;
+    case "Sad":
+      query = "sad";
+      break;
+    case "Excited":
+      query = "energetic";
+      break;
+    case "Calm":
+      query = "chill";
+      break;
+    case "Anxious":
+      query = "calm";
+      break;
+    default:
+      query = "pop";
+      break;
+  }
+
+  try {
+    // Appel à Spotify pour récupérer des playlists en fonction de l'humeur
+    const playlistsData = await getSpotifyData(
+      `search?q=${query}&type=playlist&limit=10`,
+      accessToken
+    );
+    const playlists = playlistsData.playlists.items;
 
     return new Response(JSON.stringify(playlists), { status: 200 });
   } catch (error) {

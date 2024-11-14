@@ -4,7 +4,6 @@ export async function POST(req) {
   try {
     const { moods, userId } = await req.json();
 
-    // Validation des données d'entrée
     if (!moods || !Array.isArray(moods) || moods.length === 0) {
       return new Response(JSON.stringify({ message: "Moods are required" }), {
         status: 400,
@@ -16,55 +15,35 @@ export async function POST(req) {
       });
     }
 
-    // Convertir userId en entier
     const userIdInt = parseInt(userId);
-
-    // Vérifier que l'utilisateur existe
-    const user = await prisma.user.findUnique({
-      where: { id: userIdInt },
-    });
-    if (!user) {
-      return new Response(JSON.stringify({ message: "User not found" }), {
-        status: 404,
-      });
-    }
 
     // Supprimer les anciennes humeurs associées à cet utilisateur
     await prisma.moodUser.deleteMany({
       where: { userId: userIdInt },
     });
 
-    // Traiter chaque humeur et la lier à l'utilisateur
-    const newMoods = await Promise.all(
-      moods.map(async (moodName) => {
-        // Vérifier si l'humeur existe déjà
-        let mood = await prisma.mood.findFirst({
-          where: { name: moodName },
-        });
+    const moodName = moods[0]; // Extraire le premier élément car il n'y a qu'un mood
+    let mood = await prisma.mood.findFirst({
+      where: { name: moodName },
+    });
 
-        // Si l'humeur n'existe pas, la créer
-        if (!mood) {
-          mood = await prisma.mood.create({
-            data: { name: moodName },
-          });
-        }
+    if (!mood) {
+      mood = await prisma.mood.create({ data: { name: moodName } });
+    }
 
-        // Créer une nouvelle association dans MoodUser
-        return await prisma.moodUser.create({
-          data: {
-            userId: userIdInt,
-            moodId: mood.id,
-          },
-        });
-      })
-    );
+    await prisma.moodUser.create({
+      data: {
+        userId: userIdInt,
+        moodId: mood.id,
+      },
+    });
 
     return new Response(
-      JSON.stringify({ message: "Moods saved successfully", newMoods }),
+      JSON.stringify({ message: "Mood saved successfully" }),
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error saving moods:", error);
+    console.error("Error saving mood:", error);
     return new Response(
       JSON.stringify({
         message: "Internal Server Error",

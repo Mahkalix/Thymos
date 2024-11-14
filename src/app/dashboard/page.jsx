@@ -5,31 +5,32 @@ import { useRouter } from "next/navigation";
 import Header from "../components/Header";
 
 export default function DashboardPage() {
-  const [moods, setMoods] = useState([]);
-  const [selectedMoods, setSelectedMoods] = useState([]);
+  const [selectedMood, setSelectedMood] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState(null);
 
-  const availableMoods = ["Happy", "Sad", "Excited", "Calm", "Anxious"];
+  const availableMoods = [
+    { icon: "😊", name: "Happy" },
+    { icon: "😢", name: "Sad" },
+    { icon: "😆", name: "Excited" },
+    { icon: "😌", name: "Calm" },
+    { icon: "😬", name: "Anxious" },
+  ];
+
   const router = useRouter();
 
   useEffect(() => {
     const fetchUserId = async () => {
       try {
         const res = await fetch("/api/auth/user");
-
         if (!res.ok) {
           throw new Error("Utilisateur non connecté");
         }
-
         const data = await res.json();
-        // console.log(data.id);
         setUserId(data.id);
-        console.log("User Retrieve");
       } catch (err) {
         console.error(err);
-
         setError(err.message);
       }
     };
@@ -37,59 +38,22 @@ export default function DashboardPage() {
     fetchUserId();
   }, []);
 
-  useEffect(() => {
-    const fetchMoods = async () => {
-      if (!userId) return;
-
-      setLoading(true);
-      try {
-        const res = await fetch("/api/moods", {
-          method: "GET",
-          headers: {
-            "x-user-id": userId,
-            "Content-Type": "application/json",
-          },
-        });
-        console.log("fetchMoods, ok");
-
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(
-            errorData.message || "Échec de la récupération des humeurs"
-          );
-        }
-
-        const data = await res.json();
-        setMoods(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMoods();
-  }, [userId]);
-
   const handleMoodClick = (mood) => {
-    setSelectedMoods((prevSelectedMoods) =>
-      prevSelectedMoods.includes(mood)
-        ? prevSelectedMoods.filter((m) => m !== mood)
-        : [...prevSelectedMoods, mood]
-    );
+    setSelectedMood((prevMood) => (prevMood?.name === mood.name ? null : mood));
   };
 
-  const saveMoods = async () => {
+  const saveMood = async () => {
     if (!userId) {
-      setError("L'ID utilisateur est requis pour enregistrer les humeurs.");
+      setError("L'ID utilisateur est requis pour enregistrer l'humeur.");
+      return;
+    }
+    if (!selectedMood) {
+      setError("Veuillez sélectionner une humeur.");
       return;
     }
 
     setLoading(true);
     setError(null);
-
-    console.log("Tentative de sauvegarde des humeurs:", selectedMoods);
-    console.log("ID utilisateur:", userId);
 
     try {
       const res = await fetch("/api/moods", {
@@ -97,36 +61,21 @@ export default function DashboardPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ moods: selectedMoods, userId }),
+        body: JSON.stringify({
+          moods: [selectedMood.name], // Envoi sous forme de tableau pour compatibilité avec le back
+          userId,
+        }),
       });
 
-      console.log("Réponse du serveur:", res);
-      if (res.ok) {
-        router.push(`/playlist?moods=${selectedMoods.join(",")}`);
-      }
       if (!res.ok) {
-        // Vérifie si le serveur a répondu avec une erreur
-        // Ajout d'une vérification pour s'assurer que la réponse est un JSON valide
-        let errorData;
-        try {
-          errorData = await res.json();
-        } catch (jsonErr) {
-          console.error("Erreur lors de l'analyse du JSON:", jsonErr);
-          throw new Error("Erreur inconnue lors de la sauvegarde des humeurs.");
-        }
-        console.error("Erreur renvoyée par le serveur:", errorData);
+        const errorData = await res.json();
         throw new Error(
-          errorData.message || "Échec de l'enregistrement des humeurs"
+          errorData.message || "Échec de l'enregistrement de l'humeur"
         );
       }
 
-      // const result = await res.json();
-      // console.log("Humeurs enregistrées avec succès:", result);
-
-      // alert("Humeurs enregistrées avec succès !");
-      // setSelectedMoods([]);
+      router.push(`/playlist?mood=${selectedMood.name}`);
     } catch (err) {
-      console.error("Erreur dans saveMoods:", err);
       setError(err.message || "Une erreur est survenue lors de la sauvegarde.");
     } finally {
       setLoading(false);
@@ -136,51 +85,40 @@ export default function DashboardPage() {
   return (
     <>
       <Header />
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <h1 className="text-1xl text-black font-bold mb-6">
-          Choisissez votre humeur :
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-yellow-400 via-red-500 to-purple-600">
+        <h1 className="text-2xl text-white font-bold mb-8">
+          How are you feeling?
         </h1>
 
         {loading ? (
-          <p className="text-lg">Chargement...</p>
+          <p className="text-lg text-white">Chargement...</p>
         ) : (
-          <div className="flex flex-wrap gap-4 mb-6">
-            {availableMoods.map((mood) => (
-              <button
-                key={mood}
+          <div className="flex flex-wrap gap-6 mb-8">
+            {availableMoods.map((mood, index) => (
+              <div
+                key={index}
                 onClick={() => handleMoodClick(mood)}
-                className={`px-4 py-2 rounded-lg font-semibold ${
-                  selectedMoods.includes(mood)
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-300 text-black"
+                className={`flex items-center justify-center w-32 h-32 rounded-full shadow-lg cursor-pointer transform transition duration-300 ${
+                  selectedMood?.name === mood.name
+                    ? "bg-gray-300"
+                    : "bg-gray-200 hover:bg-gray-300"
                 }`}
               >
-                {mood}
-              </button>
+                <span className="text-4xl">{mood.icon}</span>
+              </div>
             ))}
           </div>
         )}
 
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+
         <button
-          onClick={saveMoods}
-          className="px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600"
-          disabled={loading}
+          onClick={saveMood}
+          className="px-6 py-2 bg-black text-white font-bold rounded-lg focus:outline-none hover:bg-gray-800 transition duration-300"
+          disabled={loading || !selectedMood}
         >
-          Enregistrer les humeurs
+          Save
         </button>
-
-        {error && <p className="text-red-500">{error}</p>}
-
-        <h2 className="text-1xl mt-8 mb-4 text-black">
-          Vos humeurs actuelles :
-        </h2>
-        <ul className="px-4 py-2 rounded-lg font-semibold text-black">
-          {moods.map((mood, index) => (
-            <li key={index} className="text-xl">
-              {mood}
-            </li>
-          ))}
-        </ul>
       </div>
     </>
   );

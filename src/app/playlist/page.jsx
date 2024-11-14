@@ -1,76 +1,128 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 
-export default function PlaylistPage() {
+const MoodComponent = () => {
+  const [mood, setMood] = useState("Calm");
   const [playlists, setPlaylists] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [userMoods, setUserMoods] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const accessToken = "ton_access_token";
 
-  const mood = "Happy"; // Par exemple, récupérer l'humeur depuis un état ou une base de données
-  const accessToken = "ton_access_token"; // Assure-toi de récupérer correctement le token depuis ton backend ou d'un autre endroit
+  const fetchUserMoods = async (userId) => {
+    try {
+      const response = await fetch("/api/moods", {
+        method: "GET",
+        headers: {
+          "x-user-id": userId,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error fetching moods:", errorData.message);
+        return [];
+      }
+
+      const moods = await response.json();
+      return moods;
+    } catch (error) {
+      console.error("Error fetching moods:", error);
+      return [];
+    }
+  };
 
   useEffect(() => {
-    const fetchPlaylists = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `/api/spotify?mood=${mood}&accessToken=${accessToken}`
-        );
-        if (!response.ok) {
-          throw new Error("Impossible de récupérer les playlists");
-        }
-        const data = await response.json();
-        setPlaylists(data); // Enregistrer les playlists dans l'état
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    const fetchMoods = async () => {
+      const moods = await fetchUserMoods(1); // Exemple avec un ID utilisateur de 1
+      setUserMoods(moods);
+      if (moods.length > 0) {
+        setMood(moods[0]);
       }
+      setIsLoading(false);
     };
 
-    fetchPlaylists();
-  }, [mood, accessToken]); // Refaire l'appel à chaque fois que l'humeur ou le token changent
+    fetchMoods();
+  }, []);
+
+  const fetchPlaylists = async () => {
+    try {
+      const url = `/api/spotify?mood=${mood}&accessToken=${accessToken}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.error) {
+        console.error("Erreur API Spotify:", data.error);
+      } else {
+        setPlaylists(data);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des playlists:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (mood) {
+      fetchPlaylists();
+    }
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen bg-black">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-8 border-b-8 border-white"></div>
+      </div>
+    );
+  }
 
   return (
     <>
       <Header />
-      <div className="container mx-auto px-4 py-8">
-        {loading && (
-          <p className="text-xl text-center">Chargement des playlists...</p>
-        )}
-        {error && <p className="text-red-500 text-center">{error}</p>}
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {playlists.map((playlist, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-lg shadow-lg overflow-hidden hover:scale-105 transition-transform duration-300"
-            >
-              <img
-                src={playlist.images[0]?.url || "/default-image.jpg"} // Image de la playlist
-                alt={playlist.name}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-xl font-semibold">{playlist.name}</h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  {playlist.description || "Pas de description"}
-                </p>
-                <a
-                  href={playlist.external_urls.spotify}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-block text-white bg-green-500 py-2 px-4 rounded-lg hover:bg-green-600 transition"
+      <div className="container mx-auto p-8 m-7">
+        <div className="mb-6">
+          {playlists.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {playlists.map((playlist, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col"
                 >
-                  Écouter sur Spotify
-                </a>
-              </div>
+                  <img
+                    src={
+                      playlist.images[0]?.url ||
+                      "https://via.placeholder.com/300x300?text=No+Image"
+                    }
+                    alt={playlist.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-4 flex-grow">
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {playlist.name}
+                    </h3>
+                    <p className="text-gray-600 mt-2">
+                      {playlist.description || "Pas de description disponible."}
+                    </p>
+                  </div>
+                  <div className="p-4">
+                    <a
+                      href={playlist.external_urls.spotify}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-center bg-green-600 text-white py-2 px-4 rounded-full shadow-lg hover:bg-green-700 transition duration-300"
+                    >
+                      Écouter sur Spotify
+                    </a>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          ) : (
+            <p className="text-gray-600">Aucune playlist trouvée.</p>
+          )}
         </div>
       </div>
     </>
   );
-}
+};
+
+export default MoodComponent;
