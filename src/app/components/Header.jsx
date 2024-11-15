@@ -28,7 +28,7 @@ export default function Header() {
     <header className="flex justify-between items-center bg-white p-4 shadow-md">
       <a href="/dashboard" className=" items-center">
         <Image className="ml-3" width={50} height={50} src={logo} alt="logo" />
-        <h1 className="ml-3 text-xl text-black font-bold">Mood</h1>
+        <h1 className="ml-3 text-xl text-black font-semibold">Mood</h1>
       </a>
 
       <div>
