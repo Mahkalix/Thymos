@@ -4,8 +4,9 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import withAuth from "../../hoc/withAuth";
 
-const MoodComponent = () => {
+const Playlist = () => {
   const [mood, setMood] = useState("Calm");
   const [playlists, setPlaylists] = useState([]);
   const [userMoods, setUserMoods] = useState([]);
@@ -135,4 +136,4 @@ const MoodComponent = () => {
   );
 };
 
-export default MoodComponent;
+export default withAuth(Playlist);

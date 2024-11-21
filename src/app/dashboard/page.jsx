@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion"; // Import de Framer Motion
 import Header from "../components/Header";
+import withAuth from "../../hoc/withAuth";
 
-export default function DashboardPage() {
+function DashboardPage() {
   const [selectedMood, setSelectedMood] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -150,3 +151,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+export default withAuth(DashboardPage);
