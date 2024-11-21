@@ -34,7 +34,7 @@ export default function Header() {
       <div>
         <button
           onClick={handleLogout}
-          className="px-6 py-2 bg-black text-white font-bold rounded-lg focus:outline-none"
+          className="px-6 py-2 bg-black text-white font-sm rounded-full focus:outline-none"
         >
           Logout
         </button>

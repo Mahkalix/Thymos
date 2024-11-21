@@ -78,7 +78,7 @@ export default function Register() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="text-gray-500 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-yellow-100"
+                  className="text-gray-500 w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-black"
                 />
               </div>
               <div>
@@ -94,19 +94,19 @@ export default function Register() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="text-gray-500 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-yellow-300"
+                  className="text-gray-500 w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-black"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full px-4 py-2 font-bold text-white bg-black rounded-md focus:outline-none"
+                className="w-full px-4 py-2 font-sm text-white bg-black rounded-full focus:outline-none"
               >
                 Sign Up
               </button>
             </form>
             <button
               onClick={handleLogin}
-              className="w-full px-4 py-2 font-bold text-white bg-black rounded-md focus:outline-none"
+              className="w-full px-4 py-2 font-sm text-white bg-black rounded-full focus:outline-none"
             >
               Already have an account? Log in
             </button>

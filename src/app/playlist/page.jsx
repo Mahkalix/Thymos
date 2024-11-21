@@ -2,6 +2,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 const MoodComponent = () => {
   const [mood, setMood] = useState("Calm");
@@ -9,6 +11,7 @@ const MoodComponent = () => {
   const [userMoods, setUserMoods] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const accessToken = "ton_access_token";
+  const router = useRouter();
 
   const fetchUserMoods = async (userId) => {
     try {
@@ -75,13 +78,25 @@ const MoodComponent = () => {
     );
   }
 
+  const handleClick = () => {
+    router.push("/dashboard");
+  };
+
   return (
     <>
       <Header />
       <div className="container mx-auto p-8 m-7">
+        <motion.div
+          className="mb-10 w-11 cursor-pointer p-2 bg-white text-black rounded-full shadow-lg hover: transition duration-300 flex items-center justify-center"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={handleClick}
+        >
+          <span className="text-xl">←</span>
+        </motion.div>
         <div className="mb-6">
           {playlists.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
               {playlists.map((playlist, index) => (
                 <div
                   key={index}
@@ -93,22 +108,15 @@ const MoodComponent = () => {
                       "https://via.placeholder.com/300x300?text=No+Image"
                     }
                     alt={playlist.name}
-                    className="w-full h-48 object-cover"
+                    className="w-full object-contain"
                   />
-                  <div className="p-4 flex-grow">
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      {playlist.name}
-                    </h3>
-                    <p className="text-gray-600 mt-2">
-                      {playlist.description || "Pas de description disponible."}
-                    </p>
-                  </div>
+
                   <div className="p-4">
                     <a
                       href={playlist.external_urls.spotify}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block text-center bg-green-600 text-white py-2 px-4 rounded-full shadow-lg hover:bg-green-700 transition duration-300"
+                      className="block text-center bg-green-600 text-white py-2 px-2 rounded-full shadow-lg hover:bg-green-700 transition duration-300"
                     >
                       Écouter sur Spotify
                     </a>
@@ -117,7 +125,9 @@ const MoodComponent = () => {
               ))}
             </div>
           ) : (
-            <p className="text-gray-600">Aucune playlist trouvée.</p>
+            <p className="text-white flex items-center justify-center text-lg">
+              Aucune playlist trouvée...
+            </p>
           )}
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion"; // Import de Framer Motion
 import Header from "../components/Header";
 
 export default function DashboardPage() {
@@ -11,11 +12,11 @@ export default function DashboardPage() {
   const [userId, setUserId] = useState(null);
 
   const availableMoods = [
-    { icon: "😊", name: "Happy" },
-    { icon: "😢", name: "Sad" },
-    { icon: "😆", name: "Excited" },
-    { icon: "😌", name: "Calm" },
-    { icon: "😬", name: "Anxious" },
+    { icon: "😊", name: "Happy", color: "#FFD700" },
+    { icon: "😢", name: "Sad", color: "#1E90FF" },
+    { icon: "😆", name: "Excited", color: "#FF4500" },
+    { icon: "😌", name: "Calm", color: "#98FB98" },
+    { icon: "😬", name: "Anxious", color: "#8A2BE2" },
   ];
 
   const router = useRouter();
@@ -62,7 +63,7 @@ export default function DashboardPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          moods: [selectedMood.name], // Envoi sous forme de tableau pour compatibilité avec le back
+          moods: [selectedMood.name],
           userId,
         }),
       });
@@ -85,8 +86,23 @@ export default function DashboardPage() {
   return (
     <>
       <Header />
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-yellow-400 via-red-500 to-purple-600">
-        <h1 className="text-2xl text-white font-bold mb-8">
+      <motion.div
+        // Utilisation d'animations pour la transition du fond
+        animate={{
+          backgroundColor:
+            selectedMood?.color ||
+            "linear-gradient(to right, #facc15, #ef4444, #9333ea)",
+        }}
+        transition={{ duration: 0.5 }}
+        className="flex flex-col items-center justify-center min-h-screen"
+        style={{
+          backgroundImage:
+            selectedMood === null
+              ? "linear-gradient(to right, #facc15, #ef4444, #9333ea)"
+              : "none",
+        }}
+      >
+        <h1 className="text-2xl text-black font-bold mb-8">
           How are you feeling?
         </h1>
 
@@ -95,31 +111,42 @@ export default function DashboardPage() {
         ) : (
           <div className="flex flex-wrap gap-6 mb-8">
             {availableMoods.map((mood, index) => (
-              <div
+              <motion.div
                 key={index}
                 onClick={() => handleMoodClick(mood)}
-                className={`flex items-center justify-center w-32 h-32 rounded-full shadow-lg cursor-pointer transform transition duration-300 ${
-                  selectedMood?.name === mood.name
-                    ? "bg-gray-300"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
+                whileHover={{ scale: 1.1 }} // Animation au survol
+                transition={{ duration: 0.3 }}
+                className={`flex items-center justify-center w-32 h-32 rounded-full shadow-lg cursor-pointer`}
+                style={{
+                  backgroundColor:
+                    selectedMood?.name === mood.name ? mood.color : "white",
+                  border: selectedMood?.name === mood.name ? "none" : "none",
+                  boxShadow:
+                    selectedMood?.name === mood.name
+                      ? "0 0 15px rgba(0, 0, 0, 0.3)"
+                      : "none",
+                  borderWidth: selectedMood?.name === mood.name ? "3x" : "2px",
+                  opacity: selectedMood?.name === mood.name ? 1 : 1,
+                }}
               >
                 <span className="text-4xl">{mood.icon}</span>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        <button
+        <motion.button
           onClick={saveMood}
-          className="px-6 py-2 bg-black text-white font-bold rounded-lg focus:outline-none hover:bg-gray-800 transition duration-300"
+          className="px-6 py-2 bg-black text-white font-sm rounded-full focus:outline-none hover:bg-gray-800 transition duration-300"
           disabled={loading || !selectedMood}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
           Save
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
     </>
   );
 }
