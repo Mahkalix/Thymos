@@ -19,3 +19,9 @@ body {
   background: var(--background);
   font-family: "Poppins", Helvetica, sans-serif;
 }
+
+.bg-vinyle {
+  background-image: url("../../public/vinyle.jpg");
+  background-size: cover;
+  background-position: center;
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import logo from "../../../public/Logo.png";
+import logo from "../../../public/Logo.webp";
 import Image from "next/image";
 
 export default function Header() {
@@ -27,8 +27,10 @@ export default function Header() {
   return (
     <header className="flex justify-between items-center bg-white p-4 shadow-md">
       <a href="/dashboard" className=" items-center">
-        <Image className="ml-3" width={50} height={50} src={logo} alt="logo" />
-        <h1 className="ml-3 text-xl text-black font-semibold">Mood</h1>
+        <Image className="ml-0" width={80} height={80} src={logo} alt="logo" />
+        <h1 className="ml-3 text-2xl  text-[#e53928] font-light font-custom ">
+          Thymos
+        </h1>
       </a>
 
       <div>

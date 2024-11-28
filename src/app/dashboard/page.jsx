@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion"; // Import de Framer Motion
+import { motion } from "framer-motion";
 import Header from "../components/Header";
 import withAuth from "../../hoc/withAuth";
 
@@ -86,68 +86,64 @@ function DashboardPage() {
 
   return (
     <>
-      <Header />
-      <motion.div
-        // Utilisation d'animations pour la transition du fond
-        animate={{
-          backgroundColor:
-            selectedMood?.color ||
-            "linear-gradient(to right, #facc15, #ef4444, #9333ea)",
-        }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col items-center justify-center min-h-screen"
-        style={{
-          backgroundImage:
-            selectedMood === null
-              ? "linear-gradient(to right, #facc15, #ef4444, #9333ea)"
-              : "none",
-        }}
-      >
-        <h1 className="text-2xl text-black font-bold mb-8">
-          How are you feeling?
-        </h1>
-
-        {loading ? (
-          <p className="text-lg text-white">Chargement...</p>
-        ) : (
-          <div className="flex flex-wrap gap-6 mb-8">
-            {availableMoods.map((mood, index) => (
-              <motion.div
-                key={index}
-                onClick={() => handleMoodClick(mood)}
-                whileHover={{ scale: 1.1 }} // Animation au survol
-                transition={{ duration: 0.3 }}
-                className={`flex items-center justify-center w-32 h-32 rounded-full shadow-lg cursor-pointer`}
-                style={{
-                  backgroundColor:
-                    selectedMood?.name === mood.name ? mood.color : "white",
-                  border: selectedMood?.name === mood.name ? "none" : "none",
-                  boxShadow:
-                    selectedMood?.name === mood.name
-                      ? "0 0 15px rgba(0, 0, 0, 0.3)"
-                      : "none",
-                  borderWidth: selectedMood?.name === mood.name ? "3x" : "2px",
-                  opacity: selectedMood?.name === mood.name ? 1 : 1,
-                }}
-              >
-                <span className="text-4xl">{mood.icon}</span>
-              </motion.div>
-            ))}
-          </div>
-        )}
-
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-
-        <motion.button
-          onClick={saveMood}
-          className="px-6 py-2 bg-black text-white font-sm rounded-full focus:outline-none hover:bg-gray-800 transition duration-300"
-          disabled={loading || !selectedMood}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <motion.div
+          animate={{
+            backgroundColor: selectedMood?.color || "bg-vinyle",
+          }}
+          transition={{ duration: 0.5 }}
+          className={`flex flex-col items-center justify-center flex-grow ${
+            selectedMood === null ? "bg-vinyle" : "bg-vinyle"
+          }`}
         >
-          Save
-        </motion.button>
-      </motion.div>
+          <h1 className="text-2xl text-white font-bold mb-8">
+            How are you feeling ?
+          </h1>
+
+          {loading ? (
+            <p className="text-lg text-white">Chargement...</p>
+          ) : (
+            <div className="flex flex-wrap gap-6 mb-8">
+              {availableMoods.map((mood, index) => (
+                <motion.div
+                  key={index}
+                  onClick={() => handleMoodClick(mood)}
+                  whileHover={{ scale: 1.1 }} // Animation au survol
+                  transition={{ duration: 0.3 }}
+                  className={`flex items-center justify-center w-32 h-32 rounded-full shadow-lg cursor-pointer`}
+                  style={{
+                    backgroundColor:
+                      selectedMood?.name === mood.name ? mood.color : "white",
+                    border: selectedMood?.name === mood.name ? "none" : "none",
+                    boxShadow:
+                      selectedMood?.name === mood.name
+                        ? "0 0 15px rgba(0, 0, 0, 0.3)"
+                        : "none",
+                    borderWidth:
+                      selectedMood?.name === mood.name ? "3x" : "2px",
+                    opacity: selectedMood?.name === mood.name ? 1 : 1,
+                  }}
+                >
+                  <span className="text-4xl">{mood.icon}</span>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {error && <p className="text-red-500 mb-4">{error}</p>}
+
+          <motion.button
+            onClick={saveMood}
+            className="px-6 py-2 bg-black text-white font-sm rounded-full focus:outline-none  transition duration-300"
+            disabled={loading || !selectedMood}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            Save
+          </motion.button>
+        </motion.div>
+      </div>
     </>
   );
 }

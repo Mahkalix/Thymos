@@ -8,8 +8,8 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "Mood",
-  description: "Mood est une application de musique",
+  title: "Thymos",
+  description: "Thymos est une application de musique",
   icons: {
     icon: "/favicon.ico",
   },
@@ -20,6 +20,10 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <head>
         <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="stylesheet"
+          href="https://use.typekit.net/xsw7wlk.css"
+        ></link>
       </head>
       <body className={`${poppins.variable}`}>{children}</body>
     </html>

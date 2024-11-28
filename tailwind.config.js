@@ -10,7 +10,11 @@ module.exports = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        custom: ['mighty-slab', 'sans-serif' ], 
+      },
     },
   },
   plugins: [],
 };
+

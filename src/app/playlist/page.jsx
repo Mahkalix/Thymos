@@ -1,11 +1,10 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import withAuth from "../../hoc/withAuth";
-
+import Image from "next/image";
 const Playlist = () => {
   const [mood, setMood] = useState("Calm");
   const [playlists, setPlaylists] = useState([]);
@@ -39,7 +38,7 @@ const Playlist = () => {
 
   useEffect(() => {
     const fetchMoods = async () => {
-      const moods = await fetchUserMoods(1); // Exemple avec un ID utilisateur de 1
+      const moods = await fetchUserMoods(1);
       setUserMoods(moods);
       if (moods.length > 0) {
         setMood(moods[0]);
@@ -82,48 +81,53 @@ const Playlist = () => {
   const handleClick = () => {
     router.push("/dashboard");
   };
-
+  console.log(playlists);
   return (
     <>
       <Header />
       <div className="container mx-auto p-8 m-7">
         <motion.div
-          className="mb-10 w-11 cursor-pointer p-2 bg-white text-black rounded-full shadow-lg hover: transition duration-300 flex items-center justify-center"
+          className="mb-10 w-11 cursor-pointer p-2 bg-white text-black rounded-full shadow-lg hover:transition duration-300 flex items-center justify-center"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={handleClick}
         >
           <span className="text-xl">←</span>
         </motion.div>
+
         <div className="mb-6">
           {playlists.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-              {playlists.map((playlist, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col"
-                >
-                  <img
-                    src={
-                      playlist.images[0]?.url ||
-                      "https://via.placeholder.com/300x300?text=No+Image"
-                    }
-                    alt={playlist.name}
-                    className="w-full object-contain"
-                  />
-
-                  <div className="p-4">
-                    <a
-                      href={playlist.external_urls.spotify}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block text-center bg-green-600 text-white py-2 px-2 rounded-full shadow-lg hover:bg-green-700 transition duration-300"
+              {playlists.map((playlist, index) => {
+                if (playlist && playlist.images && playlist.images.length > 0) {
+                  return (
+                    <div
+                      key={index}
+                      className="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col"
                     >
-                      Écouter sur Spotify
-                    </a>
-                  </div>
-                </div>
-              ))}
+                      <img
+                        src={
+                          playlist.images[0]?.url ||
+                          "https://via.placeholder.com/300x300?text=No+Image"
+                        }
+                        alt={playlist.name}
+                        className="w-full object-cover h-64" /* Ajuste la hauteur de l'image */
+                      />
+
+                      <div className="p-4">
+                        <a
+                          href={playlist.external_urls.spotify}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-center bg-green-600 text-white py-2 px-2 rounded-full shadow-lg hover:bg-green-700 transition duration-300"
+                        >
+                          Écouter sur Spotify
+                        </a>
+                      </div>
+                    </div>
+                  );
+                }
+              })}
             </div>
           ) : (
             <p className="text-white flex items-center justify-center text-lg">

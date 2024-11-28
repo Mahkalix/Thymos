@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import logo from "../../../public/Logo.png";
+import logo from "../../../public/Logo.webp";
 import Link from "next/link";
 import Footer from "../components/Footer";
 
@@ -48,16 +48,18 @@ export default function Register() {
         <div className="flex justify-between items-center bg-white p-4 shadow-md">
           <Link href="/" className=" items-center">
             <Image
-              className="ml-3"
-              width={50}
-              height={50}
+              className="ml-0 items-center"
+              width={80}
+              height={80}
               src={logo}
               alt="logo"
             />
-            <h1 className="ml-3 text-xl text-black font-bold">Mood</h1>
+            <h1 className="ml-3 text-2xl font-light font-custom text-[#e53928]">
+              Thymos
+            </h1>
           </Link>
         </div>
-        <div className="flex-grow flex items-center justify-center bg-gradient-to-r from-yellow-400 via-red-500 to-purple-600">
+        <div className="flex-grow flex items-center justify-center bg-vinyle">
           <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl text-black font-normal text-center">
               Sign Up
