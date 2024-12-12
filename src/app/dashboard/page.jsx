@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import * as faceapi from "face-api.js";
 import Header from "../components/Header";
 import withAuth from "../../hoc/withAuth";
 
@@ -10,17 +11,22 @@ function DashboardPage() {
   const [selectedMood, setSelectedMood] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [cameraError, setCameraError] = useState(null); // État pour gérer les erreurs de caméra
   const [userId, setUserId] = useState(null);
 
-  const availableMoods = [
-    { icon: "😊", name: "Happy", color: "#FFD700" },
-    { icon: "😢", name: "Sad", color: "#1E90FF" },
-    { icon: "😆", name: "Excited", color: "#FF4500" },
-    { icon: "😌", name: "Calm", color: "#98FB98" },
-    { icon: "😬", name: "Anxious", color: "#8A2BE2" },
-  ];
-
+  const videoRef = useRef(null);
   const router = useRouter();
+
+  const availableMoods = useMemo(
+    () => [
+      { icon: "😊", name: "Happy", color: "#FFD700" },
+      { icon: "😢", name: "Sad", color: "#1E90FF" },
+      { icon: "😆", name: "Excited", color: "#FF4500" },
+      { icon: "😌", name: "Calm", color: "#98FB98" },
+      { icon: "😤", name: "Angry", color: "#8A2BE2" },
+    ],
+    []
+  );
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -40,6 +46,85 @@ function DashboardPage() {
     fetchUserId();
   }, []);
 
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+        await faceapi.nets.faceExpressionNet.loadFromUri("/models");
+        console.log("Models loaded successfully");
+      } catch (err) {
+        console.error("Erreur lors du chargement des modèles :", err);
+      }
+    };
+
+    loadModels();
+
+    const startVideo = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+
+        setInterval(async () => {
+          if (videoRef.current && faceapi.nets.tinyFaceDetector.isLoaded) {
+            const detections = await faceapi
+              .detectAllFaces(
+                videoRef.current,
+                new faceapi.TinyFaceDetectorOptions()
+              )
+              .withFaceExpressions();
+
+            if (detections.length > 0) {
+              const expressions = detections[0].expressions;
+              const dominantExpression = Object.keys(expressions).reduce(
+                (a, b) => (expressions[a] > expressions[b] ? a : b)
+              );
+
+              const moodMapping = {
+                happy: "Happy",
+                sad: "Sad",
+                surprised: "Excited",
+                neutral: "Calm",
+                fearful: "Angry",
+                angry: "Angry",
+                disgusted: "Angry",
+              };
+
+              const mappedMood = availableMoods.find(
+                (mood) => mood.name === moodMapping[dominantExpression]
+              );
+
+              if (mappedMood) {
+                setSelectedMood(mappedMood);
+              }
+            }
+          }
+        }, 1000);
+
+        return () => clearInterval(intervalId);
+      } catch (err) {
+        console.error("Erreur avec la caméra :", err);
+        setCameraError(
+          "Please activate your camera to detect your mood or choose one manually."
+        );
+      }
+      const streamCleanup = async () => {
+        const stream = videoRef.current?.srcObject;
+        const tracks = stream?.getTracks();
+        tracks?.forEach((track) => track.stop());
+      };
+
+      return () => {
+        streamCleanup();
+      };
+    };
+
+    startVideo();
+  }, [availableMoods]);
+
   const handleMoodClick = (mood) => {
     setSelectedMood((prevMood) => (prevMood?.name === mood.name ? null : mood));
   };
@@ -50,7 +135,7 @@ function DashboardPage() {
       return;
     }
     if (!selectedMood) {
-      setError("Veuillez sélectionner une humeur.");
+      setError("Please choose a mood before saving.");
       return;
     }
 
@@ -97,9 +182,33 @@ function DashboardPage() {
             selectedMood === null ? "bg-vinyle" : "bg-vinyle"
           }`}
         >
-          <h1 className="text-2xl text-white font-bold mb-8">
+          <h1
+            className="text-2xl text-white font-bold mb-8"
+            style={{
+              textShadow:
+                "2px 2px 0 #000000, -2px -2px 0 #000000, 2px -2px 0 #000000, -2px 2px 0 #000000",
+            }}
+          >
             How are you feeling ?
           </h1>
+
+          {cameraError ? (
+            <div className="text-red-500 p-4 bg-white rounded-3xl shadow-xl  mx-auto mb-8 text-center">
+              {cameraError}
+            </div>
+          ) : (
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              className="w-full h-auto mb-6 p-2 bg-white rounded-3xl shadow-xl  mx-auto"
+              style={{
+                maxWidth: "300px",
+                borderRadius: "20px",
+                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+              }}
+            />
+          )}
 
           {loading ? (
             <p className="text-lg text-white">Chargement...</p>
@@ -109,29 +218,28 @@ function DashboardPage() {
                 <motion.div
                   key={index}
                   onClick={() => handleMoodClick(mood)}
-                  whileHover={{ scale: 1.1 }} // Animation au survol
+                  whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.3 }}
-                  className={`flex items-center justify-center w-32 h-32 rounded-full shadow-lg cursor-pointer`}
+                  className={`flex flex-col items-center justify-center w-32 h-32 rounded-full shadow-lg cursor-pointer`}
                   style={{
                     backgroundColor:
                       selectedMood?.name === mood.name ? mood.color : "white",
-                    border: selectedMood?.name === mood.name ? "none" : "none",
                     boxShadow:
                       selectedMood?.name === mood.name
                         ? "0 0 15px rgba(0, 0, 0, 0.3)"
                         : "none",
-                    borderWidth:
-                      selectedMood?.name === mood.name ? "3x" : "2px",
-                    opacity: selectedMood?.name === mood.name ? 1 : 1,
                   }}
                 >
-                  <span className="text-4xl">{mood.icon}</span>
+                  <span className="text-4xl mb-2">{mood.icon}</span>
+                  <span className="text-sm font-medium text-black">
+                    {mood.name}
+                  </span>
                 </motion.div>
               ))}
             </div>
           )}
 
-          {error && <p className="text-red-500 mb-4">{error}</p>}
+          {error && <p className="text-white mb-4">{error}</p>}
 
           <motion.button
             onClick={saveMood}

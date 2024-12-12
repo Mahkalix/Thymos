@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import withAuth from "../../hoc/withAuth";
-import Image from "next/image";
+
 const Playlist = () => {
   const [mood, setMood] = useState("Calm");
   const [playlists, setPlaylists] = useState([]);
@@ -73,7 +73,7 @@ const Playlist = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-black">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-8 border-b-8 border-white"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-4 border-t-white border-gray-700"></div>
       </div>
     );
   }
@@ -87,12 +87,25 @@ const Playlist = () => {
       <Header />
       <div className="container mx-auto p-8 m-7">
         <motion.div
-          className="mb-10 w-11 cursor-pointer p-2 bg-white text-black rounded-full shadow-lg hover:transition duration-300 flex items-center justify-center"
+          className="mb-10 w-12 h-12 cursor-pointer bg-white text-black rounded-full shadow-lg hover:bg-gray-100 hover:transition duration-300 flex items-center justify-center"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={handleClick}
         >
-          <span className="text-xl">←</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
         </motion.div>
 
         <div className="mb-6">
@@ -111,7 +124,7 @@ const Playlist = () => {
                           "https://via.placeholder.com/300x300?text=No+Image"
                         }
                         alt={playlist.name}
-                        className="w-full object-cover h-64" /* Ajuste la hauteur de l'image */
+                        className="w-full object-cover h-64"
                       />
 
                       <div className="p-4">
@@ -121,7 +134,7 @@ const Playlist = () => {
                           rel="noopener noreferrer"
                           className="block text-center bg-green-600 text-white py-2 px-2 rounded-full shadow-lg hover:bg-green-700 transition duration-300"
                         >
-                          Écouter sur Spotify
+                          Listen on Spotify
                         </a>
                       </div>
                     </div>
@@ -130,9 +143,7 @@ const Playlist = () => {
               })}
             </div>
           ) : (
-            <p className="text-white flex items-center justify-center text-lg">
-              Aucune playlist trouvée...
-            </p>
+            <p className="text-white flex items-center justify-center text-lg"></p>
           )}
         </div>
       </div>
