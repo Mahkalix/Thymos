@@ -43,7 +43,7 @@ export default function Login() {
     <>
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center bg-white p-4 shadow-md">
-          <div className=" items-center">
+          <div className=" items-center flex flex-row">
             <Image
               className="ml-0 items-center"
               width={80}

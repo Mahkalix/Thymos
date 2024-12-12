@@ -3,17 +3,17 @@ npm install
 npm run dev
 
 //BDD
-npx prisma generate
+npm install prisma --save-dev
+npm install @prisma/client
+
 npx prisma migrate dev
+npx prisma generate
+npm i @prisma/client@latest
+
+(voir bdd)
 npx prisma studio
 
-//Tailwind
-
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-
 // .env si local
-
 si local, sinon changer la route
 DATABASE_URL="file:./dev.db"
 

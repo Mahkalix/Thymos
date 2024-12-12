@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
-}
+} 
 
 model User {
   id       Int        @id @default(autoincrement())
@@ -21,11 +21,9 @@ model Mood {
 }
 
 model MoodUser {
-  id      Int    @id @default(autoincrement())
-  userId  Int
-  moodId  Int
-
-  // Relations
-  user    User   @relation(fields: [userId], references: [id])
-  mood    Mood   @relation(fields: [moodId], references: [id])
+  id     Int  @id @default(autoincrement())
+  userId Int
+  moodId Int
+  mood   Mood @relation(fields: [moodId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
 }

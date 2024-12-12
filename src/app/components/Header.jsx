@@ -26,7 +26,7 @@ export default function Header() {
 
   return (
     <header className="flex justify-between items-center bg-white p-4 shadow-md">
-      <a href="/dashboard" className=" items-center">
+      <a href="/dashboard" className=" items-center flex flex-row">
         <Image className="ml-0" width={80} height={80} src={logo} alt="logo" />
         <h1 className="ml-3 text-2xl  text-[#e53928] font-light font-custom ">
           Thymos

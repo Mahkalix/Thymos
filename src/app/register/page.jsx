@@ -46,7 +46,7 @@ export default function Register() {
     <>
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center bg-white p-4 shadow-md">
-          <Link href="/" className=" items-center">
+          <Link href="/" className=" items-center flex flex-row">
             <Image
               className="ml-0 items-center"
               width={80}

@@ -17,7 +17,7 @@ export async function GET(req) {
   }
 
   // Liste des humeurs disponibles
-  const availableMoods = ["Happy", "Sad", "Excited", "Calm", "Anxious"];
+  const availableMoods = ["Happy", "Sad", "Excited", "Calm", "Angry"];
 
   // Vérifier si l'humeur est valide
   if (!availableMoods.includes(mood)) {
@@ -36,13 +36,13 @@ export async function GET(req) {
       query = "sad";
       break;
     case "Excited":
-      query = "energetic";
+      query = "excited";
       break;
     case "Calm":
       query = "chill";
       break;
-    case "Anxious":
-      query = "calm";
+    case "Angry":
+      query = "angry";
       break;
     default:
       query = "pop";
