@@ -6,8 +6,9 @@ npm run dev
 npm install prisma --save-dev
 npm install @prisma/client
 
-npx prisma generate
 npx prisma migrate dev
+npx prisma generate
+npm i @prisma/client@latest
 
 (voir bdd)
 npx prisma studio
