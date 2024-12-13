@@ -12,7 +12,7 @@ export async function POST(req) {
 
     if (existingUser) {
       return new Response(
-        JSON.stringify({ message: "Utilisateur déjà existant." }),
+        JSON.stringify({ message: "Already existing user." }),
         {
           status: 409,
         }
@@ -31,16 +31,16 @@ export async function POST(req) {
     });
 
     // Registration successful
-    return new Response(JSON.stringify({ message: "Inscription réussie !" }), {
-      status: 201,
-    });
-  } catch (error) {
-    console.error(error);
     return new Response(
-      JSON.stringify({ message: "Une erreur est survenue." }),
+      JSON.stringify({ message: "Registration successful!" }),
       {
-        status: 500,
+        status: 201,
       }
     );
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ message: "An error has occurred." }), {
+      status: 500,
+    });
   }
 }
