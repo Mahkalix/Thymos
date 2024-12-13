@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "prisma generate && next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
@@ -14,6 +14,7 @@
     "autoprefixer": "^10.4.20",
     "bcrypt": "^5.1.1",
     "cookies-next": "^4.3.0",
+    "dotenv": "^16.4.7",
     "face-api.js": "^0.20.0",
     "framer-motion": "^11.11.17",
     "next": "^15.0.3",
