@@ -1,7 +1,6 @@
 {
   "env": {
     "NODE_ENV": "production",
-    "NEXTAUTH_URL": "https://ton-app.vercel.app",
-    "PNPM_VERSION": "9.12.1"
+    "NEXTAUTH_URL": "https://ton-app.vercel.app"
   }
 }
