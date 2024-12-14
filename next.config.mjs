@@ -4,10 +4,11 @@ const nextConfig = {
     domains: ['i.scdn.co'],
   },
   webpack(config) {
-    // Ignore 'fs' module on the client-side (browser)
-    config.node = {
-      fs: 'empty',  // Cette ligne permet d'éviter l'erreur liée au module 'fs'
+    // Ignore le module fs
+    config.resolve.fallback = {
+      fs: false, // Utilisation de `false` pour "ignorer" le module
     };
+
     return config;
   },
 };
