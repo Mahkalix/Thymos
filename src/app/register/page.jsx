@@ -46,9 +46,9 @@ export default function Register() {
     <>
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center bg-white p-4 shadow-md">
-          <Link href="/" className=" items-center flex flex-row">
+          <Link href="/" className="flex items-center">
             <Image
-              className="ml-0 items-center"
+              className="ml-0"
               width={80}
               height={80}
               src={logo}
@@ -59,7 +59,7 @@ export default function Register() {
             </h1>
           </Link>
         </div>
-        <div className="flex-grow flex items-center justify-center bg-vinyle">
+        <div className="flex-grow flex items-center justify-center bg-vinyle p-4">
           <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl text-black font-normal text-center">
               Sign Up
