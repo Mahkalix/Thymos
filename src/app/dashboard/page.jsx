@@ -68,7 +68,7 @@ function DashboardPage() {
           videoRef.current.srcObject = stream;
         }
 
-        setInterval(async () => {
+        const intervalId = setInterval(async () => {
           if (videoRef.current && faceapi.nets.tinyFaceDetector.isLoaded) {
             const detections = await faceapi
               .detectAllFaces(
@@ -111,15 +111,6 @@ function DashboardPage() {
           "Please activate your camera to detect your mood or choose one manually."
         );
       }
-      const streamCleanup = async () => {
-        const stream = videoRef.current?.srcObject;
-        const tracks = stream?.getTracks();
-        tracks?.forEach((track) => track.stop());
-      };
-
-      return () => {
-        streamCleanup();
-      };
     };
 
     startVideo();
@@ -183,7 +174,7 @@ function DashboardPage() {
           }`}
         >
           <h1
-            className="text-2xl text-white font-bold mb-8"
+            className="text-2xl text-white font-bold mb-8 text-center"
             style={{
               textShadow:
                 "2px 2px 0 #000000, -2px -2px 0 #000000, 2px -2px 0 #000000, -2px 2px 0 #000000",
@@ -193,7 +184,7 @@ function DashboardPage() {
           </h1>
 
           {cameraError ? (
-            <div className="text-red-500 p-4 bg-white rounded-3xl shadow-xl  mx-auto mb-8 text-center">
+            <div className="text-red-500 p-4 bg-white rounded-3xl shadow-xl mx-auto mb-8 text-center">
               {cameraError}
             </div>
           ) : (
@@ -201,7 +192,7 @@ function DashboardPage() {
               ref={videoRef}
               autoPlay
               muted
-              className="w-full h-auto mb-6 p-2 bg-white rounded-3xl shadow-xl  mx-auto"
+              className="w-full h-auto mb-6 p-2 bg-white rounded-3xl shadow-xl mx-auto"
               style={{
                 maxWidth: "300px",
                 borderRadius: "20px",
@@ -213,14 +204,14 @@ function DashboardPage() {
           {loading ? (
             <p className="text-lg text-white">Chargement...</p>
           ) : (
-            <div className="flex flex-wrap gap-6 mb-8">
+            <div className="flex flex-wrap gap-6 mb-8 justify-center">
               {availableMoods.map((mood, index) => (
                 <motion.div
                   key={index}
                   onClick={() => handleMoodClick(mood)}
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.3 }}
-                  className={`flex flex-col items-center justify-center w-32 h-32 rounded-full shadow-lg cursor-pointer`}
+                  className={`flex flex-col items-center justify-center w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-lg cursor-pointer`}
                   style={{
                     backgroundColor:
                       selectedMood?.name === mood.name ? mood.color : "white",
@@ -230,8 +221,8 @@ function DashboardPage() {
                         : "none",
                   }}
                 >
-                  <span className="text-4xl mb-2">{mood.icon}</span>
-                  <span className="text-sm font-medium text-black">
+                  <span className="text-3xl sm:text-4xl mb-2">{mood.icon}</span>
+                  <span className="text-xs sm:text-sm font-medium text-black">
                     {mood.name}
                   </span>
                 </motion.div>
@@ -241,15 +232,15 @@ function DashboardPage() {
 
           {error && <p className="text-white mb-4">{error}</p>}
 
-          <motion.button
+          <motion.div
             onClick={saveMood}
-            className="px-6 py-2 bg-black text-white font-sm rounded-full focus:outline-none  transition duration-300"
-            disabled={loading || !selectedMood}
+            className="px-6 py-2 bg-black text-white font-sm rounded-full focus:outline-none transition duration-300 cursor-pointer"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            style={{ display: "inline-block", textAlign: "center" }}
           >
             Save
-          </motion.button>
+          </motion.div>
         </motion.div>
       </div>
     </>

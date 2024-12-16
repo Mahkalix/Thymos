@@ -43,9 +43,9 @@ export default function Login() {
     <>
       <div className="flex flex-col min-h-screen">
         <div className="flex justify-between items-center bg-white p-4 shadow-md">
-          <div className=" items-center flex flex-row">
+          <div className="flex items-center">
             <Image
-              className="ml-0 items-center"
+              className="ml-0"
               width={80}
               height={80}
               src={logo}
@@ -56,7 +56,7 @@ export default function Login() {
             </h1>
           </div>
         </div>
-        <div className="flex-grow flex items-center justify-center bg-vinyle">
+        <div className="flex-grow flex items-center justify-center bg-vinyle p-4">
           <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl text-black font-normal text-center">
               Connexion
@@ -92,7 +92,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className=" text-gray-500 w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-black"
+                  className="text-gray-500 w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-black"
                 />
               </div>
               <button

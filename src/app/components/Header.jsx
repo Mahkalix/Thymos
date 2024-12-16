@@ -26,9 +26,9 @@ export default function Header() {
 
   return (
     <header className="flex justify-between items-center bg-white p-4 shadow-md">
-      <a href="/dashboard" className=" items-center flex flex-row">
-        <Image className="ml-0" width={80} height={80} src={logo} alt="logo" />
-        <h1 className="ml-3 text-2xl  text-[#e53928] font-light font-custom ">
+      <a href="/dashboard" className="flex items-center">
+        <Image className="ml-0" width={70} height={70} src={logo} alt="logo" />
+        <h1 className="ml-1 text-2xl text-[#e53928] font-light font-custom">
           Thymos
         </h1>
       </a>
@@ -36,7 +36,7 @@ export default function Header() {
       <div>
         <button
           onClick={handleLogout}
-          className="px-6 py-2 bg-black text-white font-sm rounded-full focus:outline-none"
+          className="px-4 py-2 bg-black text-white text-sm rounded-full focus:outline-none sm:px-6 sm:py-2"
         >
           Logout
         </button>

@@ -9,7 +9,7 @@ const poppins = Poppins({
 
 export const metadata = {
   title: "Thymos",
-  description: "Thymos est une application de musique",
+  description: "Thymos is a mood-based music app",
   icons: {
     icon: "/favicon.ico",
   },

@@ -12,23 +12,17 @@ export async function POST(req) {
     });
 
     if (!user) {
-      return new Response(
-        JSON.stringify({ message: "Utilisateur non trouvé." }),
-        {
-          status: 401,
-        }
-      );
+      return new Response(JSON.stringify({ message: "User not found." }), {
+        status: 401,
+      });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return new Response(
-        JSON.stringify({ message: "Mot de passe incorrect." }),
-        {
-          status: 401,
-        }
-      );
+      return new Response(JSON.stringify({ message: "Wrong password." }), {
+        status: 401,
+      });
     }
 
     //stocke user.id dans cookies
@@ -47,11 +41,8 @@ export async function POST(req) {
     return res;
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({ message: "Une erreur est survenue." }),
-      {
-        status: 500,
-      }
-    );
+    return new Response(JSON.stringify({ message: "An error has occurred." }), {
+      status: 500,
+    });
   }
 }
