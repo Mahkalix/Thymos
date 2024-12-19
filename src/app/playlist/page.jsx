@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Header from "../components/Header";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -13,6 +13,7 @@ const Playlist = () => {
   const accessToken = "ton_access_token";
   const router = useRouter();
 
+  // Fetch moods for the user
   const fetchUserMoods = async (userId) => {
     try {
       const response = await fetch("/api/moods", {
@@ -36,6 +37,18 @@ const Playlist = () => {
     }
   };
 
+  // Available moods
+  const availableMoods = useMemo(
+    () => [
+      { icon: " 😊", name: "Happy", color: "#FFD700" },
+      { icon: " 😢", name: "Sad", color: "#1E90FF" },
+      { icon: " 😮​", name: "Surprised", color: "#FF4500" },
+      { icon: " 😐​", name: "Neutral", color: "#98FB98" },
+      { icon: " 😤", name: "Angry", color: "#8A2BE2" },
+    ],
+    []
+  );
+
   useEffect(() => {
     const fetchMoods = async () => {
       const moods = await fetchUserMoods(1);
@@ -49,7 +62,8 @@ const Playlist = () => {
     fetchMoods();
   }, []);
 
-  const fetchPlaylists = async () => {
+  // Fetch playlists based on mood
+  const fetchPlaylists = useCallback(async () => {
     try {
       const url = `/api/spotify?mood=${mood}&accessToken=${accessToken}`;
       const response = await fetch(url);
@@ -62,13 +76,13 @@ const Playlist = () => {
     } catch (error) {
       console.error("Erreur lors de la récupération des playlists:", error);
     }
-  };
+  }, [mood, accessToken]);
 
   useEffect(() => {
     if (mood) {
       fetchPlaylists();
     }
-  });
+  }, [mood, fetchPlaylists]);
 
   if (isLoading) {
     return (
@@ -81,11 +95,14 @@ const Playlist = () => {
   const handleClick = () => {
     router.push("/dashboard");
   };
-  console.log(playlists);
+
+  const currentMood = availableMoods.find((m) => m.name === mood);
+
   return (
     <>
       <Header />
-      <div className="container mx-auto p-8 m-7">
+
+      <div className="flex flex-row container items-start gap-10 mx-auto p-4 m-7">
         <motion.div
           className="mb-10 w-12 h-12 cursor-pointer bg-white text-black rounded-full shadow-lg hover:bg-gray-100 hover:transition duration-300 flex items-center justify-center"
           whileHover={{ scale: 1.1 }}
@@ -107,45 +124,50 @@ const Playlist = () => {
             />
           </svg>
         </motion.div>
-
-        <div className="mb-6">
-          {playlists.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-              {playlists.map((playlist, index) => {
-                if (playlist && playlist.images && playlist.images.length > 0) {
-                  return (
-                    <div
-                      key={index}
-                      className="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col"
-                    >
-                      <img
-                        src={
-                          playlist.images[0]?.url ||
-                          "https://via.placeholder.com/300x300?text=No+Image"
-                        }
-                        alt={playlist.name}
-                        className="w-full object-cover h-64"
-                      />
-
-                      <div className="p-4">
-                        <a
-                          href={playlist.external_urls.spotify}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block text-center bg-green-600 text-white py-2 px-2 rounded-full shadow-lg hover:bg-green-700 transition duration-300"
-                        >
-                          Listen on Spotify
-                        </a>
-                      </div>
-                    </div>
-                  );
-                }
-              })}
-            </div>
-          ) : (
-            <p className="text-white flex items-center justify-center text-lg"></p>
-          )}
+        <div className="text-5xl mt-1">
+          {currentMood ? `${currentMood.icon}` : mood}
         </div>
+      </div>
+
+      <div className="mb-6 mx-auto p-8 m-7 mt-2">
+        {playlists.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {playlists.map((playlist, index) => {
+              if (playlist && playlist.images && playlist.images.length > 0) {
+                return (
+                  <div
+                    key={index}
+                    className="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col"
+                  >
+                    <img
+                      src={
+                        playlist.images[0]?.url ||
+                        "https://via.placeholder.com/300x300?text=No+Image"
+                      }
+                      alt={playlist.name}
+                      className="w-full object-cover h-64"
+                    />
+                    <div className="p-4">
+                      <a
+                        href={playlist.external_urls.spotify}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-center bg-green-600 text-white py-2 px-2 rounded-full shadow-lg hover:bg-green-700 transition duration-300"
+                      >
+                        Listen on Spotify
+                      </a>
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </div>
+        ) : (
+          <p className="text-white flex items-center justify-center text-lg">
+            No playlists found for this mood.
+          </p>
+        )}
       </div>
     </>
   );

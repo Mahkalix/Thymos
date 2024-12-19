@@ -13,7 +13,7 @@ function DashboardPage() {
   const [error, setError] = useState(null);
   const [cameraError, setCameraError] = useState(null); // État pour gérer les erreurs de caméra
   const [userId, setUserId] = useState(null);
-
+  const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef(null);
   const router = useRouter();
 
@@ -21,12 +21,21 @@ function DashboardPage() {
     () => [
       { icon: "😊", name: "Happy", color: "#FFD700" },
       { icon: "😢", name: "Sad", color: "#1E90FF" },
-      { icon: "😆", name: "Excited", color: "#FF4500" },
-      { icon: "😌", name: "Calm", color: "#98FB98" },
+      { icon: "😮​", name: "Surprised", color: "#FF4500" },
+      { icon: "😐​", name: "Neutral", color: "#98FB98" },
       { icon: "😤", name: "Angry", color: "#8A2BE2" },
     ],
     []
   );
+
+  const toggleVideoPlayback = () => {
+    if (isPlaying) {
+      videoRef.current.pause();
+    } else {
+      videoRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -86,8 +95,8 @@ function DashboardPage() {
               const moodMapping = {
                 happy: "Happy",
                 sad: "Sad",
-                surprised: "Excited",
-                neutral: "Calm",
+                surprised: "Surprised",
+                neutral: "Neutral",
                 fearful: "Angry",
                 angry: "Angry",
                 disgusted: "Angry",
@@ -160,45 +169,60 @@ function DashboardPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen bg-black">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-4 border-t-white border-gray-700"></div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex flex-col min-h-screen">
         <Header />
-        <motion.div
-          animate={{
-            backgroundColor: selectedMood?.color || "bg-vinyle",
-          }}
-          transition={{ duration: 0.5 }}
-          className={`flex flex-col items-center justify-center flex-grow ${
-            selectedMood === null ? "bg-vinyle" : "bg-vinyle"
-          }`}
-        >
-          <h1
-            className="text-2xl text-white font-bold mb-8 text-center"
-            style={{
-              textShadow:
-                "2px 2px 0 #000000, -2px -2px 0 #000000, 2px -2px 0 #000000, -2px 2px 0 #000000",
-            }}
-          >
-            How are you feeling ?
-          </h1>
+        <div className="flex flex-col items-center justify-center flex-grow bg-vinyle m-0">
+          <div className="relative w-full overflow-hidden whitespace-nowrap p-2 bg-black mb-8">
+            <motion.div
+              duration={0.5}
+              className="text-3xl font-bold inline-block"
+              animate={{ x: ["0%", "-100%"] }}
+              transition={{ duration: 70, repeat: Infinity, ease: "linear" }}
+              style={{ display: "inline-block", whiteSpace: "nowrap" }}
+            >
+              HOW ARE YOU FEELING TODAY ? 😊 ​HOW ARE YOU FEELING TODAY ? 🥲​
+              HOW ARE YOU FEELING TODAY ? 😮​ HOW ARE YOU FEELING TODAY ? 😐​
+              HOW ARE YOU FEELING TODAY ? 😤​ HOW ARE YOU FEELING TODAY ? 😊 HOW
+              ARE YOU FEELING TODAY ? 🥲 HOW ARE YOU FEELING TODAY ?​ 😮​ HOW
+              ARE YOU FEELING TODAY ? 😐​ HOW ARE YOU FEELING TODAY ? 😤​ HOW
+              ARE YOU FEELING TODAY ?
+            </motion.div>
+          </div>
 
           {cameraError ? (
             <div className="text-red-500 p-4 bg-white rounded-3xl shadow-xl mx-auto mb-8 text-center">
               {cameraError}
             </div>
           ) : (
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              className="w-full h-auto mb-6 p-2 bg-white rounded-3xl shadow-xl mx-auto"
-              style={{
-                maxWidth: "300px",
-                borderRadius: "20px",
-                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
-              }}
-            />
+            <div className="relative">
+              <video
+                ref={videoRef}
+                autoPlay
+                muted
+                className="w-full h-auto mb-6 p-2 bg-black rounded-3xl shadow-xl mx-auto"
+                style={{
+                  maxWidth: "300px",
+                  borderRadius: "20px",
+                  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                }}
+              />
+              <button
+                onClick={toggleVideoPlayback}
+                className="absolute top-2 right-2 bg-black text-white m-2 px-4 py-2 rounded-full shadow-lg"
+              >
+                {isPlaying ? "Pause" : "Play"}
+              </button>
+            </div>
           )}
 
           {loading ? (
@@ -235,13 +259,13 @@ function DashboardPage() {
           <motion.div
             onClick={saveMood}
             className="px-6 py-2 bg-black text-white font-sm rounded-full focus:outline-none transition duration-300 cursor-pointer"
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.1, rotate: 5, backgroundColor: "#333" }}
             whileTap={{ scale: 0.9 }}
             style={{ display: "inline-block", textAlign: "center" }}
           >
             Save
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </>
   );

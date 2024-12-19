@@ -34,6 +34,9 @@ export default function Header() {
       </a>
 
       <div>
+        <a href="/account" className="flex items-center">
+          Account
+        </a>
         <button
           onClick={handleLogout}
           className="px-4 py-2 bg-black text-white text-sm rounded-full focus:outline-none sm:px-6 sm:py-2"
