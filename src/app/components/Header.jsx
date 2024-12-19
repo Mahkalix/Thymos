@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import logo from "../../../public/Logo.webp";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const router = useRouter();
@@ -24,6 +25,8 @@ export default function Header() {
     }
   };
 
+  const isActive = (pathname) => usePathname() === pathname;
+
   return (
     <header className="flex justify-between items-center bg-white p-4 shadow-md">
       <a href="/dashboard" className="flex items-center">
@@ -33,10 +36,24 @@ export default function Header() {
         </h1>
       </a>
 
-      <div>
-        <a href="/account" className="flex items-center">
+      <div className="flex items-center">
+        <a
+          href="/dashboard"
+          className={`flex items-center mr-5 hover:underline ${
+            isActive("/dashboard") ? "underline text-black" : "text-black"
+          }`}
+        >
+          Dashboard
+        </a>
+        <a
+          href="/account"
+          className={`flex items-center mr-5 hover:underline ${
+            isActive("/account") ? "underline text-black" : "text-black"
+          }`}
+        >
           Account
         </a>
+
         <button
           onClick={handleLogout}
           className="px-4 py-2 bg-black text-white text-sm rounded-full focus:outline-none sm:px-6 sm:py-2"

@@ -131,7 +131,25 @@ function UserPage() {
           {message && <p className="text-green-500 text-center">{message}</p>}
           {user ? (
             <>
-              {console.log("Current user ID:", user.id)} {/* Vérifie l'ID */}
+              {console.log("Current user ID:", user.id)}
+              <div
+                className="relative flex items-center justify-center"
+                onClick={handleAvatarClick}
+              >
+                <img
+                  src={formData.profileImage || "/default-avatar.jpg"}
+                  alt="Profile"
+                  className="object-cover rounded-full w-20 h-20 border-2 shadow-md"
+                />
+
+                <button
+                  type="button"
+                  onClick={handleAvatarClick}
+                  className=" w-8 h-8 absolute top-12 right-36 text-l bg-white rounded-full p-1 border border-black "
+                >
+                  ✏️
+                </button>
+              </div>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label
@@ -169,31 +187,6 @@ function UserPage() {
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="profileImage"
-                    className="block mb-2 text-sm font-medium text-black"
-                  >
-                    Profile Image
-                  </label>
-                  <div className="relative flex items-center">
-                    <div
-                      className="cursor-pointer w-24 h-24 rounded-full overflow-hidden"
-                      onClick={handleAvatarClick}
-                    >
-                      <img
-                        src={formData.profileImage || "/default-avatar.jpg"} // Utilisation de l'URL par défaut
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleAvatarClick} // Ouvre le dialogue de fichier
-                      className="absolute top-0 right-0 m-2 text-xl"
-                    >
-                      ✏️
-                    </button>
-                  </div>
                   <input
                     type="file"
                     ref={fileInputRef} // Référence de l'input
