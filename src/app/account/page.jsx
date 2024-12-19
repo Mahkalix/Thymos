@@ -5,32 +5,39 @@ import { useRouter } from "next/navigation";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import axios from "axios";
+import withAuth from "@/hoc/withAuth";
+import Avatar from "boring-avatars";
 
 function UserPage() {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     email: "",
     newPassword: "",
-    profileImage: "", // Initialisation avec une chaîne vide
+    profileImage: "",
   });
-  const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState("");
   const router = useRouter();
+  const fileInputRef = useRef(null);
 
-  const fileInputRef = useRef(null); // Référence pour l'input de fichier
+  const avatarSeeds = [
+    "default1",
+    "default2",
+    "default3",
+    "default4",
+    "default5",
+  ];
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const res = await axios.get("/api/auth/user");
-        console.log("Fetched user data:", res.data); // Vérifie les données récupérées
         if (res.data.id) {
           setUser(res.data);
           setFormData({
             email: res.data.email,
             newPassword: "",
-            profileImage: res.data.profileImage || "/default-avatar.jpg", // Utilisation de l'URL relative pour l'image par défaut
+            profileImage: res.data.profileImage || "/default-avatar.jpg",
           });
         } else {
           setError(res.data.message || "User not logged in.");
@@ -48,17 +55,9 @@ function UserPage() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        console.log("Profile image updated:", reader.result); // Vérifie le chargement de l'image
-        setFormData({ ...formData, profileImage: reader.result });
-      };
-      reader.readAsDataURL(file);
-      setImage(file);
-    }
+  const handleAvatarSelect = (seed) => {
+    setFormData({ ...formData, profileImage: seed });
+    setUser((prevUser) => ({ ...prevUser, profileImage: seed }));
   };
 
   const handleSubmit = async (e) => {
@@ -66,18 +65,11 @@ function UserPage() {
     setMessage("");
     setError(null);
 
-    console.log("Data being submitted:", formData); // Vérifie les données du formulaire
-
     try {
       const res = await axios.patch("/api/auth/user", formData);
-      console.log("Update response:", res.data); // Vérifie la réponse de l'API
       setMessage(res.data.message || "Update successful!");
       setUser(res.data.user);
     } catch (err) {
-      console.error(
-        "An error occurred during update:",
-        err.response?.data || err
-      );
       setError(
         err.response?.data?.message || "An error occurred during update."
       );
@@ -87,36 +79,36 @@ function UserPage() {
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete your account?")) return;
 
-    console.log("Attempting to delete user ID:", user?.id); // Vérifie l'ID avant suppression
-
     try {
       const res = await axios.delete("/api/auth/user");
-      console.log("Delete response:", res.data); // Vérifie la réponse de l'API
       alert(res.data.message || "Account deleted successfully.");
       router.push("/login");
     } catch (err) {
-      console.error("Failed to delete account:", err.response?.data || err);
       setError(err.response?.data?.message || "Failed to delete account.");
     }
   };
 
-  const generateAvatar = async () => {
-    try {
-      const seed = user?.email || "default";
-      const avatarUrl = `https://api.dicebear.com/6.x/initials/svg?seed=${encodeURIComponent(
-        seed
-      )}`;
-      console.log("Generated avatar URL:", avatarUrl); // Vérifie l'URL générée
-      setFormData({ ...formData, profileImage: avatarUrl });
-      setError(null);
-    } catch (err) {
-      console.error("Failed to generate avatar:", err);
-      setError("Failed to generate avatar.");
-    }
+  const handleAvatarClick = () => {
+    fileInputRef.current.click();
   };
 
-  const handleAvatarClick = () => {
-    fileInputRef.current.click(); // Ouvre le dialogue de fichier lorsqu'on clique sur l'emoji
+  // Handle image upload from file input
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({
+          ...formData,
+          profileImage: reader.result, // Set the profile image from file input
+        });
+        setUser((prevUser) => ({
+          ...prevUser,
+          profileImage: reader.result, // Update user profile image
+        }));
+      };
+      reader.readAsDataURL(file); // Read image as base64
+    }
   };
 
   return (
@@ -124,31 +116,71 @@ function UserPage() {
       <Header />
       <div className="flex-grow flex items-center justify-center bg-cover bg-vinyle p-4">
         <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-          <h1 className="text-2xl text-black font-normal text-center">
-            Manage Your Account
+          <h1 className="text-1xl text-black font-normal text-center">
+            Your Account
           </h1>
           {error && <p className="text-red-500 text-center">{error}</p>}
           {message && <p className="text-green-500 text-center">{message}</p>}
           {user ? (
             <>
-              {console.log("Current user ID:", user.id)}
-              <div
-                className="relative flex items-center justify-center"
-                onClick={handleAvatarClick}
-              >
-                <img
-                  src={formData.profileImage || "/default-avatar.jpg"}
-                  alt="Profile"
-                  className="object-cover rounded-full w-20 h-20 border-2 shadow-md"
-                />
-
+              <div className="relative flex items-center justify-center">
+                {formData.profileImage &&
+                !formData.profileImage.startsWith("data:image") ? (
+                  <Avatar
+                    onClick={handleAvatarClick}
+                    className="shadow-xl rounded-full border-2 border-white"
+                    name={formData.profileImage || "default-avatar"}
+                    colors={[
+                      "#c92c2c",
+                      "#cf6123",
+                      "#f3c363",
+                      "#f1e9bb",
+                      "#5c483a",
+                    ]}
+                    variant="marble"
+                    size={80}
+                  />
+                ) : (
+                  <img
+                    src={formData.profileImage || "/default-avatar.jpg"}
+                    alt="Profile"
+                    className="shadow-xl rounded-full border-2 border-white"
+                    width={80}
+                    height={80}
+                    onClick={handleAvatarClick}
+                  />
+                )}
                 <button
                   type="button"
                   onClick={handleAvatarClick}
-                  className=" w-8 h-8 absolute top-12 right-36 text-l bg-white rounded-full p-1 border border-black "
+                  className="w-8 h-8 absolute top-12 right-36 text-l bg-white rounded-full p-1 shadow-lg border-2 border-white"
                 >
                   ✏️
                 </button>
+              </div>
+              <div>
+                <div className="flex flex-wrap gap-4 justify-center">
+                  {avatarSeeds.map((seed, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleAvatarSelect(seed)}
+                      className="cursor-pointer shadow-sm rounded-full border-2 border-white"
+                    >
+                      <Avatar
+                        size={40}
+                        name={seed}
+                        variant="marble"
+                        colors={[
+                          "#c92c2c",
+                          "#cf6123",
+                          "#f3c363",
+                          "#f1e9bb",
+                          "#5c483a",
+                        ]}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -164,7 +196,6 @@ function UserPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    disabled={user.provider !== "email"}
                     className="text-black w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-black"
                   />
                 </div>
@@ -182,24 +213,17 @@ function UserPage() {
                     name="newPassword"
                     value={formData.newPassword}
                     onChange={handleChange}
-                    className="text-black w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-black"
+                    className="text-black w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-grey"
                   />
                 </div>
 
                 <div>
                   <input
                     type="file"
-                    ref={fileInputRef} // Référence de l'input
-                    onChange={handleImageChange}
-                    className="hidden" // Cache l'input de fichier
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleImageUpload}
                   />
-                  <button
-                    type="button"
-                    onClick={generateAvatar}
-                    className="w-full mt-2 px-4 py-2 text-white bg-green-500 rounded-full focus:outline-none"
-                  >
-                    Generate Avatar
-                  </button>
                 </div>
 
                 <button
@@ -211,7 +235,9 @@ function UserPage() {
               </form>
             </>
           ) : (
-            <p>Loading user information...</p>
+            <div className="flex flex-grow items-center justify-center">
+              <div className="justify-center flex items-center animate-spin rounded-full h-10 w-10 border-4 border-t-4 border-t-white border-black"></div>
+            </div>
           )}
 
           <button
@@ -227,4 +253,4 @@ function UserPage() {
   );
 }
 
-export default UserPage;
+export default withAuth(UserPage);

@@ -19,6 +19,7 @@
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "boring-avatars": "^1.11.2",
     "cookies-next": "^4.3.0",
     "dotenv": "^16.4.7",
     "face-api.js": "^0.22.2",
