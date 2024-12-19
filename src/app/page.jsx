@@ -17,21 +17,26 @@ export default function Login() {
     e.preventDefault();
     setMessage("");
 
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      setMessage("Connexion réussie !");
-      window.location.href = "/dashboard";
-    } else {
-      setError(data.message || "Identifiants invalides. Veuillez réessayer.");
+      if (res.ok) {
+        setMessage("Connexion réussie !");
+        window.location.href = "/dashboard";
+      } else {
+        setError(data.message || "Identifiants invalides. Veuillez réessayer.");
+      }
+    } catch (error) {
+      console.error(error);
+      setError("Une erreur est survenue. Veuillez réessayer.");
     }
   };
 
@@ -61,7 +66,15 @@ export default function Login() {
             <h1 className="text-2xl text-black font-normal text-center">
               Connexion
             </h1>
-            {error && <p className="text-red-500 text-center">{error}</p>}
+            {message && (
+              <div className="text-green-500 flex justify-center">
+                {message}
+              </div>
+            )}
+            {error && (
+              <div className="text-red-500 flex justify-center">{error}</div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label
