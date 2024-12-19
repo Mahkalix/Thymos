@@ -18,6 +18,17 @@ export default function Header() {
     });
 
     if (res.ok) {
+      if (localStorage.getItem("userEmail")) {
+        localStorage.removeItem("userEmail");
+      } else {
+        console.warn("userEmail not found in localStorage.");
+      }
+      document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie =
+        "profileImage=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie =
+        "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
       router.push("/");
     } else {
       console.error("Échec de la déconnexion");

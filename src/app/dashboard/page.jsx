@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import * as faceapi from "face-api.js";
 import Header from "../components/Header";
 import withAuth from "../../hoc/withAuth";
+import Camera from "../../../public/camera-off.svg";
 
 function DashboardPage() {
   const [selectedMood, setSelectedMood] = useState(null);
@@ -14,8 +15,10 @@ function DashboardPage() {
   const [cameraError, setCameraError] = useState(null); // État pour gérer les erreurs de caméra
   const [userId, setUserId] = useState(null);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [videoLoading, setVideoLoading] = useState(true); // État pour gérer le chargement de la vidéo
   const videoRef = useRef(null);
   const router = useRouter();
+  const noCamera = Camera.src;
 
   const availableMoods = useMemo(
     () => [
@@ -75,6 +78,9 @@ function DashboardPage() {
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          videoRef.current.onloadeddata = () => {
+            setVideoLoading(false); // La vidéo est chargée
+          };
         }
 
         const intervalId = setInterval(async () => {
@@ -117,7 +123,7 @@ function DashboardPage() {
       } catch (err) {
         console.error("Erreur avec la caméra :", err);
         setCameraError(
-          "Please activate your camera to detect your mood or choose one manually."
+          "Please activate your camera in your browser to detect your mood or choose one manually."
         );
       }
     };
@@ -200,27 +206,42 @@ function DashboardPage() {
           </div>
 
           {cameraError ? (
-            <div className="text-red-500 p-4 bg-white rounded-3xl shadow-xl mx-auto mb-8 text-center">
+            <div
+              className="flex flex-col justify-center items-center text-white-500 h-auto mb-6 p-2 bg-black rounded-3xl shadow-xl mx-auto text-center"
+              style={{ height: "250px", width: "300px" }}
+            >
+              <img src={noCamera} alt="No Camera" className="w-16 h-16 mb-4" />
               {cameraError}
             </div>
           ) : (
-            <div className="relative">
+            <div className="relative w-full max-w-md">
+              {videoLoading && (
+                <div
+                  className="flex justify-center items-center w-full h-auto mb-6 p-2 bg-black rounded-3xl shadow-xl mx-auto"
+                  style={{ height: "250px", width: "300px" }}
+                >
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-4 border-t-white border-gray-700"></div>
+                </div>
+              )}
               <video
                 ref={videoRef}
                 autoPlay
                 muted
-                className="w-full h-auto mb-6 p-2 bg-black rounded-3xl shadow-xl mx-auto"
+                transform="scaleX(-1)"
+                className={`w-full h-auto mb-6 p-2 bg-black rounded-3xl shadow-xl mx-auto ${
+                  videoLoading ? "hidden" : ""
+                }`}
                 style={{
                   maxWidth: "300px",
                   borderRadius: "20px",
                   boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
-                  transform: "scaleX(-1)",
                 }}
               />
-
               <button
                 onClick={toggleVideoPlayback}
-                className="absolute top-2 right-2 bg-black text-white m-2 px-4 py-2 rounded-full shadow-lg"
+                className={`absolute top-2 right-20 bg-black text-white m-2 px-4 py-2 rounded-full shadow-lg ${
+                  videoLoading ? "hidden" : ""
+                }`}
               >
                 {isPlaying ? "Pause" : "Play"}
               </button>
@@ -237,7 +258,7 @@ function DashboardPage() {
                   onClick={() => handleMoodClick(mood)}
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.3 }}
-                  className={`flex flex-col items-center justify-center w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-lg cursor-pointer`}
+                  className={` flex flex-col items-center justify-center w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-lg cursor-pointer`}
                   style={{
                     backgroundColor:
                       selectedMood?.name === mood.name ? mood.color : "white",

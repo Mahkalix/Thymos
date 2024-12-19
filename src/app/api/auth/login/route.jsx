@@ -1,4 +1,3 @@
-// app/api/login/route.js
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
@@ -25,17 +24,25 @@ export async function POST(req) {
       });
     }
 
-    //stocke user.id dans cookies
-
+    // Stocke uniquement les données nécessaires
     const res = NextResponse.json({ message: "Connexion réussie !" });
-    const userId = user.id;
-    console.log("User ID from database:", userId);
-
-    res.cookies.set("id", userId, {
-      httpOnly: true, // Empêche l'accès via JavaScript
-      secure: process.env.NODE_ENV === "production", // Utiliser des cookies sécurisés en production
-      sameSite: "strict", // Prévenir les attaques CSRF
-      maxAge: 60 * 60 * 24, // Le cookie expire dans 1 jour
+    res.cookies.set("id", user.id, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24,
+    });
+    res.cookies.set("email", user.email, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24,
+    });
+    res.cookies.set("profileImage", user.profileImage, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24,
     });
 
     return res;

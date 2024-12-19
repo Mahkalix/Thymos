@@ -29,10 +29,11 @@ export default function Register() {
     const data = await res.json();
 
     if (res.ok) {
+      localStorage.setItem("userEmail", email);
       setMessage("Registration successful!");
       setTimeout(() => {
         router.push("/");
-      }, 2000); // Redirect after 2 seconds
+      }, 2000);
     } else {
       setError(data.message || "Registration failed. Please try again.");
     }
