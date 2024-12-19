@@ -28,14 +28,33 @@ function UserPage() {
     "default5",
   ];
 
+  // Récupérer les cookies email et password
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return null;
+  };
+
   useEffect(() => {
+    const emailFromCookie = getCookie("email");
+    const passwordFromCookie = getCookie("password");
+
+    // Mettre à jour le state avec les cookies récupérés
+    setFormData((prevState) => ({
+      ...prevState,
+      email: emailFromCookie || prevState.email,
+      newPassword: passwordFromCookie || prevState.newPassword,
+    }));
+
     const fetchUser = async () => {
       try {
         const res = await axios.get("/api/auth/user");
+        console.log("User data:", res.data); // Affiche la réponse pour voir ce qui est récupéré
         if (res.data.id) {
           setUser(res.data);
           setFormData({
-            email: res.data.email,
+            email: res.data.email || emailFromCookie,
             newPassword: "",
             profileImage: res.data.profileImage || "/default-avatar.jpg",
           });
@@ -49,6 +68,8 @@ function UserPage() {
     };
     fetchUser();
   }, []);
+
+  console.log(user);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -80,10 +101,13 @@ function UserPage() {
     if (!confirm("Are you sure you want to delete your account?")) return;
 
     try {
+      console.log("Sending DELETE request to /api/auth/user");
       const res = await axios.delete("/api/auth/user");
+      console.log("Response from DELETE request:", res.data);
       alert(res.data.message || "Account deleted successfully.");
       router.push("/login");
     } catch (err) {
+      console.error("Failed to delete account:", err);
       setError(err.response?.data?.message || "Failed to delete account.");
     }
   };
@@ -92,7 +116,6 @@ function UserPage() {
     fileInputRef.current.click();
   };
 
-  // Handle image upload from file input
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -116,7 +139,7 @@ function UserPage() {
       <Header />
       <div className="flex-grow flex items-center justify-center bg-cover bg-vinyle p-4">
         <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-          <h1 className="text-1xl text-black font-normal text-center">
+          <h1 className="text-2xl text-black font-normal text-center">
             Your Account
           </h1>
           {error && <p className="text-red-500 text-center">{error}</p>}

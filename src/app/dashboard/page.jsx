@@ -209,15 +209,14 @@ function DashboardPage() {
                 ref={videoRef}
                 autoPlay
                 muted
+                transform="scaleX(-1)"
                 className="w-full h-auto mb-6 p-2 bg-black rounded-3xl shadow-xl mx-auto"
                 style={{
                   maxWidth: "300px",
                   borderRadius: "20px",
                   boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
-                  transform: "scaleX(-1)",
                 }}
               />
-
               <button
                 onClick={toggleVideoPlayback}
                 className="absolute top-2 right-2 bg-black text-white m-2 px-4 py-2 rounded-full shadow-lg"
