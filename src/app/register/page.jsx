@@ -1,10 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import logo from "../../../public/Logo.webp";
 import Link from "next/link";
 import Footer from "../components/Footer";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -12,6 +14,20 @@ export default function Register() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      setError("");
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (message) {
+      toast.success(message);
+      setMessage("");
+    }
+  }, [message]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -116,6 +132,7 @@ export default function Register() {
           </div>
         </div>
         <Footer />
+        <ToastContainer />
       </div>
     </>
   );

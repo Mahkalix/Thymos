@@ -5,6 +5,9 @@ import bcrypt from "bcrypt";
 // Methode get retourne les informations de l'utilisateur
 export async function GET(req) {
   const userId = getCookie("id", { req });
+  const email = getCookie("email", { req });
+  const password = getCookie("password", { req });
+  const profileImage = getCookie("profileImage", { req });
 
   if (!userId) {
     return new Response(

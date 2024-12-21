@@ -5,6 +5,8 @@ import Image from "next/image";
 import logo from "../../public/Logo.webp";
 import Footer from "../app/components/Footer";
 import Vinyle from "../../public/vinyle.jpg";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -19,6 +21,20 @@ export default function Login() {
       setEmail(savedEmail);
     }
   }, []);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      setError("");
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (message) {
+      toast.success(message);
+      setMessage("");
+    }
+  }, [message]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -131,6 +147,7 @@ export default function Login() {
           </div>
         </div>
         <Footer />
+        <ToastContainer />
       </div>
     </>
   );
