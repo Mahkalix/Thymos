@@ -8,18 +8,26 @@ import axios from "axios";
 import defaultImage from "../../../public/default-avatar.jpg";
 import withAuth from "@/hoc/withAuth";
 import Avatar from "boring-avatars";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function UserPage() {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     email: "",
-    newPassword: "",
     profileImage: "",
   });
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(""); // Message de succès
   const [isEditing, setIsEditing] = useState(false); // État pour activer/désactiver le mode édition
   const [isAvatarSelectorOpen, setIsAvatarSelectorOpen] = useState(false); // État pour gérer l'ouverture de la sélection d'avatars
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
   const router = useRouter();
   const defaultImagePath = defaultImage.src;
 
@@ -39,8 +47,8 @@ function UserPage() {
           setUser(res.data);
           setFormData({
             email: res.data.email,
-            newPassword: "",
             profileImage: res.data.profileImage || "default",
+            newPassword: "********",
           });
           console.log("res.data.profileImage", res);
         } else {
@@ -57,19 +65,15 @@ function UserPage() {
 
   useEffect(() => {
     if (error) {
-      const timer = setTimeout(() => {
-        setError(null);
-      }, 3000);
-      return () => clearTimeout(timer);
+      toast.error(error);
+      setError(null);
     }
   }, [error]);
 
   useEffect(() => {
     if (message) {
-      const timer = setTimeout(() => {
-        setMessage("");
-      }, 2000);
-      return () => clearTimeout(timer);
+      toast.success(message);
+      setMessage("");
     }
   }, [message]);
 
@@ -134,8 +138,16 @@ function UserPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setError("");
+
     if (!isEditing) {
       setIsEditing(true);
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setError("New passwords do not match.");
       return;
     }
 
@@ -145,7 +157,8 @@ function UserPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user.id,
-          newPassword: formData.newPassword,
+          oldPassword: oldPassword,
+          newPassword: newPassword,
           newProfileImage: formData.profileImage,
           newEmail: formData.email,
         }),
@@ -180,7 +193,7 @@ function UserPage() {
       }
 
       const result = await response.json();
-      alert(result.message || "Account deleted successfully.");
+      toast.success(result.message || "Account deleted successfully.");
 
       router.push("/");
     } catch (err) {
@@ -197,8 +210,6 @@ function UserPage() {
           <h1 className="text-2xl text-black font-normal text-center">
             Your Account
           </h1>
-          {error && <p className="text-red-500 text-center">{error}</p>}
-          {message && <p className="text-green-500 text-center">{message}</p>}
           {user ? (
             <>
               <div className="relative flex items-center justify-center">
@@ -282,7 +293,7 @@ function UserPage() {
                   {avatarSeeds.map((seed, index) => (
                     <div
                       key={index}
-                      onClick={() => handleAvatarSelect(seed)}
+                      onClick={() => handleAvatarSelect(seed)} // Sélection d'un avatar parmi les options
                       className="cursor-pointer shadow-sm rounded-full border-2 border-white"
                     >
                       <Avatar
@@ -293,6 +304,7 @@ function UserPage() {
                           "#c92c2c",
                           "#cf6123",
                           "#f3c363",
+                          "#f1e9bb",
                           "#f1e9bb",
                           "#5c483a",
                         ]}
@@ -332,27 +344,109 @@ function UserPage() {
                     }`}
                   />
                 </div>
-
-                <div>
-                  <label
-                    htmlFor="newPassword"
-                    className="block mb-2 text-sm font-medium text-black"
-                  >
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    id="newPassword"
-                    name="newPassword"
-                    value={formData.newPassword}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className={`text-black w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-gray ${
-                      !isEditing ? "opacity-50" : ""
-                    }`}
-                  />
-                </div>
-
+                {!isEditing && (
+                  // Password
+                  <div className="relative">
+                    <label
+                      htmlFor="newPassword"
+                      className="block mb-2 text-sm font-medium text-black"
+                    >
+                      Password
+                    </label>
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      id="newPassword"
+                      name="newPassword"
+                      value={formData.newPassword}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className={`text-black w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-gray ${
+                        !isEditing ? "opacity-50" : ""
+                      }`}
+                    />
+                  </div>
+                )}
+                {/* Old Password */}
+                {isEditing && (
+                  <div className="relative">
+                    <label
+                      htmlFor="oldPassword"
+                      className="block mb-2 text-sm font-medium text-black"
+                    >
+                      Old Password
+                    </label>
+                    <input
+                      type={showOldPassword ? "text" : "password"}
+                      id="oldPassword"
+                      name="oldPassword"
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                      className="text-black w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-gray"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500"
+                      onClick={() => setShowOldPassword(!showOldPassword)}
+                    >
+                      {showOldPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                )}
+                {/* New Password */}
+                {isEditing && (
+                  <div className="relative">
+                    <label
+                      htmlFor="newPassword"
+                      className="block mb-2 text-sm font-medium text-black"
+                    >
+                      New Password
+                    </label>
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      id="newPassword"
+                      name="newPassword"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="text-black w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-gray"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                    >
+                      {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                )}
+                {/* Confirm New Password */}
+                {isEditing && (
+                  <div className="relative">
+                    <label
+                      htmlFor="confirmNewPassword"
+                      className="block mb-2 text-sm font-medium text-black"
+                    >
+                      Confirm New Password
+                    </label>
+                    <input
+                      type={showConfirmNewPassword ? "text" : "password"}
+                      id="confirmNewPassword"
+                      name="confirmNewPassword"
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      className="text-black w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-gray"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500"
+                      onClick={() =>
+                        setShowConfirmNewPassword(!showConfirmNewPassword)
+                      }
+                    >
+                      {showConfirmNewPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                )}
+                {/* Bouton pour passer en mode édition */}
                 <button
                   type="submit"
                   className={`w-full px-4 py-2 font-sm text-white rounded-full focus:outline-none ${
@@ -378,6 +472,7 @@ function UserPage() {
         </div>
       </div>
       <Footer />
+      <ToastContainer />
     </div>
   );
 }
