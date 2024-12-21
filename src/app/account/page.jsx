@@ -48,7 +48,7 @@ function UserPage() {
           setFormData({
             email: res.data.email,
             profileImage: res.data.profileImage || "default",
-            newPassword: "********",
+            newPassword: "****",
           });
           console.log("res.data.profileImage", res);
         } else {
@@ -357,7 +357,7 @@ function UserPage() {
                       type={showNewPassword ? "text" : "password"}
                       id="newPassword"
                       name="newPassword"
-                      value={formData.newPassword}
+                      value={newPassword}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className={`text-black w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-gray ${
@@ -405,8 +405,8 @@ function UserPage() {
                       type={showNewPassword ? "text" : "password"}
                       id="newPassword"
                       name="newPassword"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
+                      value={formData.newPassword}
+                      onChange={handleChange}
                       className="text-black w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-gray"
                     />
                     <button
