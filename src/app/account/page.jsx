@@ -49,7 +49,7 @@ function UserPage() {
           setFormData({
             email: res.data.email,
             profileImage: res.data.profileImage || "default",
-            newPassword: "****",
+            newPassword: "********",
           });
           console.log("res.data.profileImage", res);
         } else {
@@ -240,11 +240,7 @@ function UserPage() {
                         : formData.profileImage === "default2.jpg"
                         ? ["#c92c2c", "#cf6123", "#f3c363", "#f1e9bb"]
                         : formData.profileImage === "default3.jpg"
-                        ? [
-                            "#c92c2c",
-                            "#cf6123",
-                            "#5c483a",
-                          ]
+                        ? ["#c92c2c", "#cf6123", "#5c483a"]
                         : formData.profileImage === "default3.jpg"
                         ? [
                             "#c92c2c",
@@ -473,4 +469,8 @@ function UserPage() {
         </div>
       </div>
       <Footer />
-      <ToastContainer />    </div>  );}export default withAuth(UserPage);
+      <ToastContainer />{" "}
+    </div>
+  );
+}
+export default withAuth(UserPage);
