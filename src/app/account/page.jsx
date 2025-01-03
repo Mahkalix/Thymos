@@ -18,9 +18,9 @@ function UserPage() {
   const [formData, setFormData] = useState({
     email: "",
     profileImage: "",
+    newPassword: "",
   });
   const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(""); // Message de succès
@@ -49,7 +49,7 @@ function UserPage() {
           setFormData({
             email: res.data.email,
             profileImage: res.data.profileImage || "default",
-            newPassword: "********",
+            newPassword: "",
           });
           console.log("res.data.profileImage", res);
         } else {
@@ -147,7 +147,7 @@ function UserPage() {
       return;
     }
 
-    if (newPassword !== confirmNewPassword) {
+    if (formData.newPassword !== confirmNewPassword) {
       setError("New passwords do not match.");
       return;
     }
@@ -159,7 +159,7 @@ function UserPage() {
         body: JSON.stringify({
           userId: user.id,
           oldPassword: oldPassword,
-          newPassword: newPassword,
+          newPassword: formData.newPassword,
           newProfileImage: formData.profileImage,
           newEmail: formData.email,
         }),
@@ -354,9 +354,8 @@ function UserPage() {
                       type={showNewPassword ? "text" : "password"}
                       id="newPassword"
                       name="newPassword"
-                      value={newPassword}
-                      onChange={handleChange}
-                      disabled={!isEditing}
+                      value="********"
+                      disabled
                       className={`text-black w-full px-3 py-2 border rounded-full focus:outline-none focus:ring focus:ring-gray ${
                         !isEditing ? "opacity-50" : ""
                       }`}
