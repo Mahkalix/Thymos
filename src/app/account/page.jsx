@@ -11,6 +11,7 @@ import Avatar from "boring-avatars";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import Image from "next/image";
 
 function UserPage() {
   const [user, setUser] = useState(null);
@@ -215,7 +216,7 @@ function UserPage() {
               <div className="relative flex items-center justify-center">
                 {formData.profileImage === "null" ||
                 formData.profileImage === defaultImagePath ? (
-                  <img
+                  <Image
                     src={defaultImagePath}
                     alt="Profile"
                     className={`shadow-xl rounded-full border-2 border-white`}
@@ -237,11 +238,11 @@ function UserPage() {
                             "#5c483a",
                           ]
                         : formData.profileImage === "default2.jpg"
+                        ? ["#c92c2c", "#cf6123", "#f3c363", "#f1e9bb"]
+                        : formData.profileImage === "default3.jpg"
                         ? [
                             "#c92c2c",
                             "#cf6123",
-                            "#f3c363",
-                            "#f1e9bb",
                             "#5c483a",
                           ]
                         : formData.profileImage === "default3.jpg"
@@ -472,9 +473,4 @@ function UserPage() {
         </div>
       </div>
       <Footer />
-      <ToastContainer />
-    </div>
-  );
-}
-
-export default withAuth(UserPage);
+      <ToastContainer />    </div>  );}export default withAuth(UserPage);
