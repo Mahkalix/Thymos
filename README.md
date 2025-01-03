@@ -20,7 +20,6 @@ To get started with Thymos, clone this repository and follow the instructions be
 
 ### Prerequisites
 
-- Android Studio
 - Spotify Developer Account (for API access)
 
 ### Installation
