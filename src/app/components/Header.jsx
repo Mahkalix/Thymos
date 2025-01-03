@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
 
   // Fonction de déconnexion
   const handleLogout = async () => {
@@ -36,7 +37,7 @@ export default function Header() {
     }
   };
 
-  const isActive = (pathname) => usePathname() === pathname;
+  const isActive = (path) => pathname === path;
 
   return (
     <header className="flex justify-between items-center bg-white p-4 shadow-md">
