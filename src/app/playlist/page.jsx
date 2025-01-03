@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  Suspense,
+} from "react";
 import Header from "../components/Header";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -109,7 +115,7 @@ const Playlist = () => {
   const currentMood = availableMoods.find((m) => m.name === mood);
 
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <Header />
 
       <div className="flex flex-row container items-start gap-10 mx-44 pb-8 pt-8">
@@ -179,7 +185,7 @@ const Playlist = () => {
           </p>
         )}
       </div>
-    </>
+    </Suspense>
   );
 };
 
