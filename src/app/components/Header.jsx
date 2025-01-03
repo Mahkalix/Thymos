@@ -41,17 +41,17 @@ export default function Header() {
 
   return (
     <header className="flex justify-between items-center bg-white p-4 shadow-md">
-      <a href="/dashboard" className="flex items-center">
+      <a href="/dashboard" className="flex items-center flex-wrap">
         <Image className="ml-0" width={70} height={70} src={logo} alt="logo" />
         <h1 className="ml-1 text-2xl text-[#e53928] font-light font-custom">
           Thymos
         </h1>
       </a>
 
-      <div className="flex items-center">
+      <div className="flex items-center justify-center flex-wrap gap-5">
         <a
           href="/dashboard"
-          className={`flex items-center mr-5 hover:underline ${
+          className={`flex items-center hover:underline ${
             isActive("/dashboard") ? "underline text-black" : "text-black"
           }`}
         >
@@ -59,7 +59,7 @@ export default function Header() {
         </a>
         <a
           href="/account"
-          className={`flex items-center mr-5 hover:underline ${
+          className={`flex items-center hover:underline ${
             isActive("/account") ? "underline text-black" : "text-black"
           }`}
         >
