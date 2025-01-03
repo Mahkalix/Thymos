@@ -8,6 +8,14 @@ export async function GET(req) {
   const mood = searchParams.get("mood");
   const accessToken = searchParams.get("accessToken");
 
+  // Log the request parameters for debugging
+  console.log(
+    "Received request with mood:",
+    mood,
+    "and accessToken:",
+    accessToken
+  );
+
   // Vérifier si les paramètres sont présents
   if (!mood || !accessToken) {
     return new Response(
@@ -17,7 +25,7 @@ export async function GET(req) {
   }
 
   // Liste des humeurs disponibles
-  const availableMoods = ["Happy", "Sad", "Surprised", "Neutral", "Angry"];
+  const availableMoods = ["Happy", "Sad", "Surprised", "Neutral", "Angry", "Calm"];
 
   // Vérifier si l'humeur est valide
   if (!availableMoods.includes(mood)) {
@@ -33,7 +41,7 @@ export async function GET(req) {
       query = "happy";
       break;
     case "Sad":
-      query = "sad";
+      query = "ambient";
       break;
     case "Surprised":
       query = "chill";
@@ -44,18 +52,25 @@ export async function GET(req) {
     case "Angry":
       query = "angry";
       break;
+    case "Calm":
+      query = "calm";
+      break;
     default:
       query = "pop";
       break;
   }
 
+  // Log the final query URL for debugging
+  const queryUrl = `search?q=${query}&type=playlist&limit=10`;
+  console.log("Final query URL:", queryUrl);
+
   try {
     // Appel à Spotify pour récupérer des playlists en fonction de l'humeur
-    const playlistsData = await getSpotifyData(
-      `search?q=${query}&type=playlist&limit=10`,
-      accessToken
-    );
+    const playlistsData = await getSpotifyData(queryUrl, accessToken);
     const playlists = playlistsData.playlists.items;
+
+    // Log the playlists data for debugging
+    console.log("Playlists data:", playlists);
 
     return new Response(JSON.stringify(playlists), { status: 200 });
   } catch (error) {

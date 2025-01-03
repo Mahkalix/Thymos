@@ -1,17 +1,25 @@
 "use client";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Header from "../components/Header";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import withAuth from "../../hoc/withAuth";
 
 const Playlist = () => {
-  const [mood, setMood] = useState("Calm");
+  const [mood, setMood] = useState("");
   const [playlists, setPlaylists] = useState([]);
   const [userMoods, setUserMoods] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const accessToken = "ton_access_token";
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const moodParam = searchParams.get("mood");
+    if (moodParam) {
+      setMood(moodParam);
+    }
+  }, [searchParams]);
 
   // Fetch moods for the user
   const fetchUserMoods = async (userId) => {
@@ -54,7 +62,7 @@ const Playlist = () => {
       const moods = await fetchUserMoods(1);
       setUserMoods(moods);
       if (moods.length > 0) {
-        setMood(moods[0]);
+        setMood(moods[0].name); // Ensure the mood state is set correctly
       }
       setIsLoading(false);
     };
@@ -65,6 +73,8 @@ const Playlist = () => {
   // Fetch playlists based on mood
   const fetchPlaylists = useCallback(async () => {
     try {
+      console.log("Fetching playlists for mood:", mood); // Log the current mood before making the API call
+      console.log("Using accessToken:", accessToken); // Log the access token being sent in the request
       const url = `/api/spotify?mood=${mood}&accessToken=${accessToken}`;
       const response = await fetch(url);
       const data = await response.json();
