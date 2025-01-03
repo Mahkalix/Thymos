@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import withAuth from "../../hoc/withAuth";
 
-const Playlist = () => {
+const PlaylistContent = () => {
   const [mood, setMood] = useState("");
   const [playlists, setPlaylists] = useState([]);
   const [userMoods, setUserMoods] = useState([]);
@@ -115,7 +115,7 @@ const Playlist = () => {
   const currentMood = availableMoods.find((m) => m.name === mood);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <>
       <Header />
 
       <div className="flex flex-row container items-start gap-10 mx-44 pb-8 pt-8">
@@ -185,8 +185,14 @@ const Playlist = () => {
           </p>
         )}
       </div>
-    </Suspense>
+    </>
   );
 };
+
+const Playlist = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <PlaylistContent />
+  </Suspense>
+);
 
 export default withAuth(Playlist);
