@@ -118,7 +118,7 @@ const PlaylistContent = () => {
     <>
       <Header />
 
-      <div className="flex flex-row container items-start gap-10 mx-44 pb-8 pt-8">
+      <div className="flex flex-row sm:flex-row container items-start gap-10 mx-4 sm:mx-44 pb-8 pt-8">
         <motion.div
           className="mb-10 w-10 h-10 cursor-pointer bg-white text-black rounded-full shadow-lg hover:bg-gray-100 hover:transition duration-300 flex items-center justify-center"
           whileHover={{ scale: 1.1 }}
@@ -140,12 +140,12 @@ const PlaylistContent = () => {
             />
           </svg>
         </motion.div>
-        <div className="text-4xl">
+        <div className="text-3xl sm:text-4xl">
           {currentMood ? `${currentMood.icon}` : mood}
         </div>
       </div>
 
-      <div className="mb-6 mx-44">
+      <div className="mb-6 mx-4 sm:mx-44">
         {playlists.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {playlists.map((playlist, index) => {
